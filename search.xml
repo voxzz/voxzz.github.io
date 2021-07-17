@@ -1,23 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2021/07/06/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+    <title>Hexo博客搭建</title>
+    <url>/2021/07/07/Other/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<p>Hexo是一款快速、简洁且高效的博客框架。Hexo使用Markdown解析文章，可以利用主题模板快速生成静态网页。</p>
 <span id="more"></span>
 
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="创建博客"><a href="#创建博客" class="headerlink" title="创建博客"></a>创建博客</h2><h3 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h3><p>安装Hexo之前需要先安装下面两个软件。</p>
+<ul>
+<li><a href="https://nodejs.org/en/">Node.js</a></li>
+<li><a href="https://git-scm.com/">git</a></li>
+</ul>
+<p>安装完成之后，便可以使用 npm 安装 Hexo。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<h3 id="建立站点"><a href="#建立站点" class="headerlink" title="建立站点"></a>建立站点</h3><p>选择博客站点的根目录，在根目录打开终端，进行初始化。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ hexo init</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>初始化完成后，根目录结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml		// 网站配置文件</span><br><span class="line">├── package.json	// 应用程序信息</span><br><span class="line">├── scaffolds		// 模板文件夹</span><br><span class="line">├── source			// 资源文件夹</span><br><span class="line">|   ├── _drafts</span><br><span class="line">|   └── _posts		// 博客文章文件夹</span><br><span class="line">└── themes			// 主题文件夹</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>如此，博客站点便建立成功，执行如下命令即可进行预览。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ hexo clean		// 清除缓存文件和已生成的静态文件</span><br><span class="line">$ hexo g			// 生成静态网页</span><br><span class="line">$ hexo s			// 启动本地服务器，默认访问网址为：http://localhost:4000</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<img src="/2021/07/07/Other/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/%E6%9C%AC%E5%9C%B0%E8%AE%BF%E9%97%AE%E9%A2%84%E8%A7%88.png" class="" title="本地访问预览">
+
+<h2 id="部署博客"><a href="#部署博客" class="headerlink" title="部署博客"></a>部署博客</h2><p>Hexo可以部署在自己的服务器上，也可以托管到公共代码仓库。</p>
+<p>这里只说明托管到公共代码仓库的方法。</p>
+<h3 id="部署到-GitHub"><a href="#部署到-GitHub" class="headerlink" title="部署到 GitHub"></a>部署到 GitHub</h3><h4 id="建立仓库"><a href="#建立仓库" class="headerlink" title="建立仓库"></a>建立仓库</h4><p>在自己的 GitHub 中新建一个公共仓库，名字必须为<code>&lt;用户名&gt;.github.io</code>。</p>
+<h4 id="生成密钥"><a href="#生成密钥" class="headerlink" title="生成密钥"></a>生成密钥</h4><p>利用 Git 的工具生成 SSH 密钥。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -C &quot;邮箱地址&quot;</span><br></pre></td></tr></table></figure>
+
+<p>过程全部默认即可，最后会提示密钥生成的位置，一般会在用户目录下的 .ssh 目录中。</p>
+<p>打开 id_rsa.pub 文件，其内容便是 SSH 的密钥中的公钥。</p>
+<h4 id="设置密钥"><a href="#设置密钥" class="headerlink" title="设置密钥"></a>设置密钥</h4><p>打开 GitHub SSH Key 设置页面，位置为<code>头像-&gt;Settings-&gt;SSH and GPG keys</code>。</p>
+<p>新建一个 SSH keys，将生成的公钥复制进去即可。</p>
+<h4 id="连接测试"><a href="#连接测试" class="headerlink" title="连接测试"></a>连接测试</h4><p>在终端执行命令测试密钥是否生效。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
+<p>如果出现下面提示，就是设置成功。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Hi xxxx! You&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span><br></pre></td></tr></table></figure>
+
+<h4 id="设置账号"><a href="#设置账号" class="headerlink" title="设置账号"></a>设置账号</h4><p>在终端设置 GitHub 账号信息。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ git config --global user.name <span class="string">&quot;用户名&quot;</span></span><br><span class="line">$ git config --global user.email  <span class="string">&quot;邮箱地址&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="配置博客"><a href="#配置博客" class="headerlink" title="配置博客"></a>配置博客</h4><p>打开博客根目录的配置文件<code>_config.yml</code>，找到<code>deploy</code>字段，修改配置。</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo: github:</span> <span class="string">git@github.com:&lt;用户名&gt;/&lt;用户名&gt;.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="上传部署"><a href="#上传部署" class="headerlink" title="上传部署"></a>上传部署</h4><p>部署前需要先安装插件<code>hexo-deployer-git</code>。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+<p>执行命令<code>hexo deploy</code>或<code>hexo d</code>，将博客部署到 GitHub 。</p>
+<p>访问<code>https://&lt;用户名&gt;.github.io</code>即可看到部署的博客页面。</p>
+<p>需要注意的是，上传之后，页面不会立即改变，因为缓存的存在，会有一定延迟。</p>
+<h3 id="同时部署到-Gitee"><a href="#同时部署到-Gitee" class="headerlink" title="同时部署到 Gitee"></a>同时部署到 Gitee</h3><p>因为国内访问 GitHub 的速度比较慢，所以可以同时上传一份到 Gitee。</p>
+<h4 id="建立仓库-1"><a href="#建立仓库-1" class="headerlink" title="建立仓库"></a>建立仓库</h4><p>在自己的 Gitee 中新建一个公共仓库，名字随意，不过出于后面设置域名方便一些，建议使用用户名作为仓库名。</p>
+<p>建立仓库后，也设置下自己的 SSH 公钥，<code>头像-&gt;设置-&gt;SSH公钥</code>。</p>
+<h4 id="配置博客-1"><a href="#配置博客-1" class="headerlink" title="配置博客"></a>配置博客</h4><p>打开根目录配置文件<code>_config.yml</code>，修改部署配置。</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> </span><br><span class="line">    <span class="attr">github:</span> <span class="string">git@github.com:&lt;用户名&gt;/&lt;用户名&gt;.github.io.git</span></span><br><span class="line">    <span class="attr">gitee:</span> <span class="string">git@gitee.com:&lt;用户名&gt;/&lt;仓库名&gt;.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+
+<p>同样的命令上传。</p>
+<h4 id="开启服务"><a href="#开启服务" class="headerlink" title="开启服务"></a>开启服务</h4><p>Gitee需要手动开启页面解析服务，进入博客仓库，在如图的位置进行设置。</p>
+<img src="/2021/07/07/Other/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/%E5%BC%80%E5%90%AFGitee%E9%A1%B5%E9%9D%A2%E6%9C%8D%E5%8A%A1.png" class="" title="开启页面服务">
+
+<p>选择<code>master</code>分支，开启服务（建议强制使用HTTPS）。</p>
+<p>访问地址在开启时会提示。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://hexo.io/zh-cn/">Hexo 官网</a></p>
+<p><a href="https://www.cnblogs.com/liuxianan/p/build-blog-website-by-hexo-github.html">使用hexo+github搭建免费个人博客详细教程</a></p>
 ]]></content>
   </entry>
 </search>
