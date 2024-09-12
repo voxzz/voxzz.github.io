@@ -35,6 +35,30 @@
       </tags>
   </entry>
   <entry>
+    <title>D-Link DIR-645 固件分析</title>
+    <url>/cyber-security/vulnerability/app/d-link/d-link_dir-645_%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<p>通过 D-Link 资源站点下载 <a href="https://files.dlink.com.au/products/DIR-645/REV_A/Firmware/DIR645_FW103B11/DIR645A1_FW103B11.zip">A1 1.03B11</a> 版本的固件镜像。</p>
+<span id="more"></span>
+
+<h2 id="固件解压"><a href="#固件解压" class="headerlink" title="固件解压"></a>固件解压</h2><p>使用 Binwalk 进行固件解压。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">binwalk -Me DIR645A1_FW103B11.bin</span><br></pre></td></tr></table></figure>
+
+<h2 id="固件仿真"><a href="#固件仿真" class="headerlink" title="固件仿真"></a>固件仿真</h2><p>使用 FirmAE 进行固件仿真。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd ./FirmAE</span><br><span class="line">./init.sh</span><br><span class="line">sudo ./run.sh -c DIR645 ./DIR645A1_FW103B11.bin</span><br><span class="line">sudo ./run.sh -d DIR645 ./DIR645A1_FW103B11.bin</span><br></pre></td></tr></table></figure>
+
+<p>通过 <code>http://192.168.0.1</code> 访问路由器登录界面，使用默认账户 <code>Admin / &lt;空&gt;</code> 可以进行登录。</p>
+<p><img src="%E8%AE%BF%E9%97%AE%E7%99%BB%E5%BD%95%E7%95%8C%E9%9D%A2.png" alt="访问登录界面"></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://files.dlink.com.au/products/DIR-645/REV_A/Firmware/">files.dlink.com.au - &#x2F;products&#x2F;DIR-645&#x2F;REV_A&#x2F;Firmware&#x2F;</a></p>
+]]></content>
+      <categories>
+        <category>网络安全</category>
+        <category>安全漏洞</category>
+      </categories>
+      <tags>
+        <tag>D-Link</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo 博客搭建</title>
     <url>/applications/hexo/hexo_%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
     <content><![CDATA[<p>Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他标记语言）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。</p>
