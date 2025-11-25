@@ -19,27 +19,29 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"voxzz.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="Binwalk 安装记录，基于 Ubuntu Desktop 22.04.4 amd64 环境进行部署。">
+    <meta name="description" content="通过 D-Link 资源站点下载 A1 1.03B11 版本的固件镜像。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Binwalk 安装部署">
-<meta property="og:url" content="https://voxzz.github.io/applications/Binwalk/Binwalk_%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/index.html">
+<meta property="og:title" content="D-Link DIR-645 A1 1.03B11 固件分析">
+<meta property="og:url" content="https://voxzz.github.io/cybersecurity/BugResearch/D-Link/DIR-645/D-Link_DIR-645_A1_1_03B11_%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="VBlog">
-<meta property="og:description" content="Binwalk 安装记录，基于 Ubuntu Desktop 22.04.4 amd64 环境进行部署。">
+<meta property="og:description" content="通过 D-Link 资源站点下载 A1 1.03B11 版本的固件镜像。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-10-26T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-11-17T16:00:00.000Z">
+<meta property="og:image" content="https://voxzz.github.io/cybersecurity/BugResearch/D-Link/DIR-645/D-Link_DIR-645_A1_1_03B11_%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/%E8%AE%BF%E9%97%AE%E7%99%BB%E5%BD%95%E7%95%8C%E9%9D%A2.png">
+<meta property="article:published_time" content="2025-11-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-25T08:45:14.170Z">
 <meta property="article:author" content="Voxzz">
-<meta property="article:tag" content="Binwalk">
+<meta property="article:tag" content="D-Link">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://voxzz.github.io/cybersecurity/BugResearch/D-Link/DIR-645/D-Link_DIR-645_A1_1_03B11_%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/%E8%AE%BF%E9%97%AE%E7%99%BB%E5%BD%95%E7%95%8C%E9%9D%A2.png">
 
 
-<link rel="canonical" href="https://voxzz.github.io/applications/Binwalk/Binwalk_%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/">
+<link rel="canonical" href="https://voxzz.github.io/cybersecurity/BugResearch/D-Link/DIR-645/D-Link_DIR-645_A1_1_03B11_%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://voxzz.github.io/applications/Binwalk/Binwalk_%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/","path":"applications/Binwalk/Binwalk_安装部署/","title":"Binwalk 安装部署"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://voxzz.github.io/cybersecurity/BugResearch/D-Link/DIR-645/D-Link_DIR-645_A1_1_03B11_%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/","path":"cybersecurity/BugResearch/D-Link/DIR-645/D-Link_DIR-645_A1_1_03B11_固件分析/","title":"D-Link DIR-645 A1 1.03B11 固件分析"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Binwalk 安装部署 | VBlog</title>
+<title>D-Link DIR-645 A1 1.03B11 固件分析 | VBlog</title>
   
 
 
@@ -157,7 +159,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#V3"><span class="nav-number">1.</span> <span class="nav-text">V3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#V2"><span class="nav-number">2.</span> <span class="nav-text">V2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BA%E4%BB%B6%E8%A7%A3%E5%8E%8B"><span class="nav-number">1.</span> <span class="nav-text">固件解压</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BA%E4%BB%B6%E4%BB%BF%E7%9C%9F"><span class="nav-number">2.</span> <span class="nav-text">固件仿真</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -230,7 +232,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://voxzz.github.io/applications/Binwalk/Binwalk_%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/">
+    <link itemprop="mainEntityOfPage" href="https://voxzz.github.io/cybersecurity/BugResearch/D-Link/DIR-645/D-Link_DIR-645_A1_1_03B11_%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpeg">
@@ -243,12 +245,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Binwalk 安装部署 | VBlog">
+      <meta itemprop="name" content="D-Link DIR-645 A1 1.03B11 固件分析 | VBlog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Binwalk 安装部署
+          D-Link DIR-645 A1 1.03B11 固件分析
         </h1>
 
         <div class="post-meta-container">
@@ -258,15 +260,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2025-10-27 00:00:00" itemprop="dateCreated datePublished" datetime="2025-10-27T00:00:00+08:00">2025-10-27</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-11-18 00:00:00" itemprop="dateModified" datetime="2025-11-18T00:00:00+08:00">2025-11-18</time>
+      <time title="创建时间：2025-11-25 00:00:00 / 修改时间：16:45:14" itemprop="dateCreated datePublished" datetime="2025-11-25T00:00:00+08:00">2025-11-25</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -274,11 +270,11 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%B7%A5%E5%85%B7%E5%BA%94%E7%94%A8/" itemprop="url" rel="index"><span itemprop="name">工具应用</span></a>
+          <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">网络安全</span></a>
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%B7%A5%E5%85%B7%E5%BA%94%E7%94%A8/Binwalk/" itemprop="url" rel="index"><span itemprop="name">Binwalk</span></a>
+          <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/" itemprop="url" rel="index"><span itemprop="name">漏洞研究</span></a>
         </span>
     </span>
 
@@ -291,43 +287,18 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>Binwalk 安装记录，基于 Ubuntu Desktop 22.04.4 amd64 环境进行部署。</p>
+    <div class="post-body" itemprop="articleBody"><p>通过 D-Link 资源站点下载 <a target="_blank" rel="noopener" href="https://files.dlink.com.au/products/DIR-645/REV_A/Firmware/DIR645_FW103B11/DIR645A1_FW103B11.zip">A1 1.03B11</a> 版本的固件镜像。</p>
 <span id="more"></span>
 
-<h2 id="V3"><a href="#V3" class="headerlink" title="V3"></a>V3</h2><p>安装 Rust 编译环境。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install curl</span><br><span class="line">curl --proto &#x27;=https&#x27; --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y</span><br><span class="line">. $HOME/.cargo/env</span><br></pre></td></tr></table></figure>
+<h2 id="固件解压"><a href="#固件解压" class="headerlink" title="固件解压"></a>固件解压</h2><p>使用 Binwalk 进行固件解压。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">binwalk -Me DIR645A1_FW103B11.bin</span><br></pre></td></tr></table></figure>
 
-<p>下载 Binwalk 并安装依赖。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install git</span><br><span class="line">sudo apt install build-essential libfontconfig1-dev liblzma-dev</span><br><span class="line">sudo apt install -y libzstd-dev libbz2-dev libssl-dev</span><br><span class="line">git clone https://github.com/ReFirmLabs/binwalk</span><br><span class="line">sudo ./binwalk/dependencies/ubuntu.sh</span><br></pre></td></tr></table></figure>
+<h2 id="固件仿真"><a href="#固件仿真" class="headerlink" title="固件仿真"></a>固件仿真</h2><p>使用 FirmAE 进行固件仿真。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd ./FirmAE</span><br><span class="line">./init.sh</span><br><span class="line">sudo ./run.sh -c DIR645 ~/Files/DIR645A1_FW103B11.bin</span><br><span class="line">sudo ./run.sh -d DIR645 ~/Files/DIR645A1_FW103B11.bin</span><br></pre></td></tr></table></figure>
 
-<p>编译 Binwalk 源码。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd binwalk</span><br><span class="line">cargo build --release</span><br><span class="line">sudo cp target/release/binwalk /usr/local/bin/</span><br></pre></td></tr></table></figure>
-
-<h2 id="V2"><a href="#V2" class="headerlink" title="V2"></a>V2</h2><p>安装依赖组件。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y git locales build-essential qtbase5-dev mtd-utils gzip bzip2 tar arj lhasa p7zip p7zip-full cabextract cramfsswap squashfs-tools zlib1g-dev liblzma-dev liblzo2-dev sleuthkit default-jdk lzop srecord cpio</span><br></pre></td></tr></table></figure>
-
-<p>安装 Python 依赖。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo python3 -m pip install --upgrade pip setuptools matplotlib capstone pycryptodome gnupg tk</span><br></pre></td></tr></table></figure>
-
-<p>安装 Sasquatch 组件。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y build-essential liblzma-dev liblzo2-dev zlib1g-dev</span><br><span class="line">git clone --quiet --depth 1 --branch &quot;master&quot; https://github.com/devttys0/sasquatch</span><br><span class="line">cd sasquatch</span><br><span class="line">wget https://github.com/devttys0/sasquatch/pull/51.patch &amp;&amp; patch -p1 &lt;51.patch</span><br><span class="line">sudo ./build.sh</span><br><span class="line">cd .. &amp;&amp; sudo rm -rf sasquatch</span><br></pre></td></tr></table></figure>
-
-<p>安装 Yaffshiv 组件。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/devttys0/yaffshiv</span><br><span class="line">cd yaffshiv</span><br><span class="line">sudo python3 setup.py install</span><br><span class="line">cd .. &amp;&amp; sudo rm -rf yaffshiv</span><br></pre></td></tr></table></figure>
-
-<p>安装 Yefferson 组件。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/sviehb/jefferson.git</span><br><span class="line">cd jefferson</span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install -y liblzo2-dev</span><br><span class="line">sudo python3 -m pip install -r requirements.txt</span><br><span class="line">sudo python3 setup.py install</span><br><span class="line">cd .. &amp;&amp; sudo rm -rf jefferson</span><br></pre></td></tr></table></figure>
-
-<p>安装 UBI Reader 组件。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo python3 -m pip install --upgrade ubi_reader</span><br></pre></td></tr></table></figure>
-
-<p>安装 Cramfstools 组件。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/npitre/cramfs-tools</span><br><span class="line">cd cramfs-tools</span><br><span class="line">make</span><br><span class="line">sudo install mkcramfs /usr/local/bin</span><br><span class="line">sudo install cramfsck /usr/local/bin</span><br><span class="line">cd .. &amp;&amp; sudo rm -rf cramfs-tools</span><br></pre></td></tr></table></figure>
-
-<p>安装 Binwalk 应用。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/ReFirmLabs/binwalk/archive/refs/tags/v2.3.4.tar.gz</span><br><span class="line">tar -xzvf v2.3.4.tar.gz</span><br><span class="line">cd binwalk-2.3.4/</span><br><span class="line">sudo python3 setup.py install</span><br></pre></td></tr></table></figure>
-
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://github.com/ReFirmLabs/binwalk/wiki/Compile-From-Source">Compile From Source · ReFirmLabs&#x2F;binwalk Wiki</a></p>
+<p>通过仿真环境的 IP 地址访问路由器登录界面，使用默认账户 <code>Admin / &lt;空&gt;</code> 可以进行登录。</p>
+<p><img src="%E8%AE%BF%E9%97%AE%E7%99%BB%E5%BD%95%E7%95%8C%E9%9D%A2.png" alt="访问登录界面"></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://files.dlink.com.au/products/DIR-645/REV_A/Firmware/">files.dlink.com.au - &#x2F;products&#x2F;DIR-645&#x2F;REV_A&#x2F;Firmware&#x2F;</a></p>
 
     </div>
 
@@ -337,21 +308,18 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Binwalk/" rel="tag"># Binwalk</a>
+              <a href="/tags/D-Link/" rel="tag"># D-Link</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/cybersecurity/CTF/pwnable_kr/Pwnable_kr_Toddler_s_Bottle_%E7%BB%83%E4%B9%A0%E8%AE%B0%E5%BD%95/" rel="prev" title="Pwnable.kr Toddler&#39;s Bottle 练习记录">
-                  <i class="fa fa-angle-left"></i> Pwnable.kr Toddler's Bottle 练习记录
+                <a href="/applications/QEMU/QEMU_%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/" rel="prev" title="QEMU 源码编译">
+                  <i class="fa fa-angle-left"></i> QEMU 源码编译
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/applications/QEMU/QEMU_%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/" rel="next" title="QEMU 源码编译">
-                  QEMU 源码编译 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
